@@ -143,6 +143,12 @@ def delete_phonenumber(phone_id):
         return jsonify({"error": str(e)}), 500
 
 # Search Endpoint for Vue.js
+from flask import request, jsonify
+from sqlalchemy import or_
+
+from flask import request, jsonify
+from sqlalchemy import or_
+
 @api_blueprint.route('/search', methods=['GET'])
 def search():
     query = request.args.get('q', '')
@@ -150,14 +156,23 @@ def search():
         return jsonify([])
 
     try:
-        users = Users.query.join(Sections).join(Jobs).outerjoin(PhoneNumbers).outerjoin(PhoneTypes).filter(
-            db.or_(
-                Users.FirstName.ilike(f'%{query}%'),
-                Users.LastName.ilike(f'%{query}%'),
-                Sections.SectionName.ilike(f'%{query}%'),
-                Jobs.JobTitle.ilike(f'%{query}%')
+        users = (
+            Users.query
+            .join(Sections, Users.SectionID == Sections.SectionID)
+            .join(Jobs, Users.JobID == Jobs.JobID)
+            .outerjoin(PhoneNumbers, Jobs.JobID == PhoneNumbers.JobID)
+            .outerjoin(PhoneTypes, PhoneNumbers.PhoneTypeID == PhoneTypes.PhoneTypeID)
+            .filter(
+                or_(
+                    Users.FirstName.ilike(f'%{query}%'),
+                    Users.LastName.ilike(f'%{query}%'),
+                    Sections.SectionName.ilike(f'%{query}%'),
+                    Jobs.JobTitle.ilike(f'%{query}%'),
+                    PhoneNumbers.PhoneNumber.ilike(f'%{query}%')  # 🔥 This line is the fix
+                )
             )
-        ).all()
+            .all()
+        )
 
         result = []
         for user in users:
@@ -168,6 +183,7 @@ def search():
                 }
                 for pn in user.job.phone_numbers
             ]
+
             result.append({
                 "UserID": user.UserID,
                 "FirstName": user.FirstName,
@@ -176,6 +192,7 @@ def search():
                 "JobTitle": user.job.JobTitle,
                 "PhoneNumbers": phone_numbers
             })
+
         return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
