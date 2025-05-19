@@ -5,7 +5,7 @@ api_blueprint = Blueprint('api', __name__)
 from sqlalchemy.exc import IntegrityError
 
 # Add Phone Number
-@api_blueprint.route('/phones', methods=['POST'])
+@api_blueprint.route('/api/phones/phonenumbers', methods=['POST'])
 def add_phonenumber():
     data = request.get_json()
     if not all(key in data for key in ['JobID', 'PhoneNumber']):
@@ -50,7 +50,7 @@ def add_phonenumber():
         return jsonify({"error": str(e)}), 500
 
 # Get All Phone Numbers
-@api_blueprint.route('/phones', methods=['GET'])
+@api_blueprint.route('/api/phones/phonenumbers', methods=['GET'])
 def get_phonenumbers():
     try:
         phonenumbers = PhoneNumbers.query.join(PhoneTypes, isouter=True).all()
@@ -63,13 +63,19 @@ def get_phonenumbers():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Get Single Phone Number
-@api_blueprint.route('/phones/<int:phone_id>', methods=['GET'])
+@api_blueprint.route('/api/phones/<int:phone_id>', methods=['GET'])
 def get_phonenumber(phone_id):
     try:
-        phone = PhoneNumbers.query.join(PhoneTypes, isouter=True).filter_by(PhoneID=phone_id).first()
+        phone = (
+            PhoneNumbers.query
+            .join(PhoneTypes, PhoneNumbers.PhoneTypeID == PhoneTypes.PhoneTypeID, isouter=True)
+            .filter(PhoneNumbers.PhoneID == phone_id)
+            .first()
+        )
+
         if not phone:
             return jsonify({"error": "Phone number not found"}), 404
+
         return jsonify({
             "PhoneID": phone.PhoneID,
             "JobID": phone.JobID,
@@ -78,6 +84,9 @@ def get_phonenumber(phone_id):
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+
 
 # Update Phone Number
 @api_blueprint.route('/phones/<int:phone_id>', methods=['PUT'])
