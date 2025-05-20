@@ -5,6 +5,7 @@ import Login from "../views/Login.vue";
 import Section from "../views/Sections.vue";
 import PhoneTypes from "../views/PhoneTypes.vue";
 import Users from "../views/Users.vue";
+import Jobs from "../views/Jobs.vue";
 
 const routes = [
   {
@@ -36,7 +37,12 @@ const routes = [
     path: "/users",
     name: "users",
     component: Users,
-  }
+  },
+    {
+    path: "/jobs",
+    name: "jobs",
+    component: Jobs,
+  },
 ];
 
 const router = createRouter({
