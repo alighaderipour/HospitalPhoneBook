@@ -5,6 +5,7 @@
       <router-link to="/phonenumbers" class="nav-link" v-if="authStore.isAdmin">Phonenumbers</router-link>
       <router-link to="/sections" class="nav-link" v-if="authStore.isAdmin">Sections</router-link>
       <router-link to="/phonetypes" class="nav-link" v-if="authStore.isAdmin">PhoneTypes</router-link>
+      <router-link to="/users" class="nav-link" v-if="authStore.isAdmin">Users</router-link>
     </div>
     <div class="nav-right">
       <router-link to="/login" class="nav-link" v-if="!authStore.isLoggedIn">Login</router-link>

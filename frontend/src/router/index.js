@@ -4,6 +4,7 @@ import Phonenumbers from "../views/Phonenumbers.vue";
 import Login from "../views/Login.vue";
 import Section from "../views/Sections.vue";
 import PhoneTypes from "../views/PhoneTypes.vue";
+import Users from "../views/Users.vue";
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: "/phonetypes",
     name: "phonetypes",
     component: PhoneTypes,
+  },
+    {
+    path: "/users",
+    name: "users",
+    component: Users,
   }
 ];
 
