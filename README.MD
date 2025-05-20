@@ -10,3 +10,4 @@ python run.py
 cd frontend
 npm install
 npm install vue-router@4
+npm install pinia
