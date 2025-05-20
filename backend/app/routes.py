@@ -473,6 +473,43 @@ def delete_user(user_id):
 
 
 
+# ==================================== LOGIN==============
+@api_blueprint.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+
+    # Validate input
+    if not all(key in data for key in ['UserID', 'password']):
+        return jsonify({"error": "Missing required fields: UserID, password"}), 400
+
+    try:
+        # Query user from database
+        user = Users.query.filter_by(UserID=data['UserID']).first()
+
+        if not user:
+            return jsonify({"error": "Invalid UserID or password"}), 401
+
+        # Check password (assuming plaintext for now)
+        if str(user.password) != str(data['password']):
+            return jsonify({"error": "Invalid UserID or password"}), 401
+
+        if not user.IsActive:
+            return jsonify({"error": "User account is inactive"}), 403
+
+        # Successful login response
+        return jsonify({
+            "UserID": user.UserID,
+            "FirstName": user.FirstName,
+            "LastName": user.LastName,
+            "Email": user.Email,
+            "is_admin": int(user.is_admin),
+            "message": "Login successful"
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 # ==================================== SEARCH==============
 
 

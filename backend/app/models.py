@@ -39,3 +39,4 @@ class Users(db.Model):
     Email = db.Column(db.String(100), unique=True)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
     IsActive = db.Column(db.Boolean, nullable=False, default=True)
+    password = db.Column(db.String(255), unique=True)
