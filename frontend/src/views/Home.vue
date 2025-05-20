@@ -75,68 +75,106 @@ export default {
 
 <style scoped>
 .search-container {
-  max-width: 700px;
-  margin: 0 auto;
+  max-width: 800px;
+  margin: 40px auto;
   padding: 24px;
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.search-container h2 {
+  margin-bottom: 20px;
+  font-size: 28px;
+  color: #2c3e50;
+  text-align: center;
 }
 
 .search-bar {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .search-bar input {
   flex: 1;
-  padding: 10px;
+  padding: 12px;
   font-size: 16px;
-  border-radius: 6px;
+  border-radius: 8px;
   border: 1px solid #ccc;
-  transition: border-color 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .search-bar input:focus {
-  border-color: #007bff;
+  border-color: #3498db;
   outline: none;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
 .search-bar button {
-  padding: 10px 16px;
+  padding: 12px 20px;
   font-size: 16px;
-  background-color: #007bff;
+  background-color: #3498db;
   border: none;
   color: white;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: bold;
   transition: background-color 0.3s ease;
 }
 
 .search-bar button:hover {
-  background-color: #0056b3;
+  background-color: #2980b9;
 }
 
 .status {
   font-style: italic;
-  color: #555;
-  margin-bottom: 16px;
+  color: #7f8c8d;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 .status.error {
-  color: red;
+  color: #e74c3c;
+  font-weight: bold;
 }
 
 .results {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .result-card {
-  padding: 16px;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  background: #fafafa;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  background-color: #fdfdfd;
+  transition: box-shadow 0.2s ease;
 }
+
+.result-card:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.result-card h3 {
+  margin: 0 0 10px;
+  color: #2c3e50;
+}
+
+.result-card p {
+  margin: 4px 0;
+  color: #34495e;
+}
+
+.result-card ul {
+  padding-left: 20px;
+  margin-top: 6px;
+}
+
+.result-card li {
+  color: #555;
+}
+
 </style>
