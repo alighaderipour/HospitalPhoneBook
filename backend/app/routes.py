@@ -58,12 +58,20 @@ def add_phonenumber():
 def get_phonenumbers():
     try:
         phonenumbers = PhoneNumbers.query.join(PhoneTypes, isouter=True).all()
-        return jsonify([{
-            "PhoneID": phone.PhoneID,
-            "JobID": phone.JobID,
-            "PhoneNumber": phone.PhoneNumber,
-            "PhoneTypeName": phone.phone_type.PhoneTypeName if phone.phone_type else None
-        } for phone in phonenumbers])
+        result = []
+        for phone in phonenumbers:
+            job = Jobs.query.get(phone.JobID)
+            section = Sections.query.get(job.SectionID) if job else None
+
+            result.append({
+                "PhoneID": phone.PhoneID,
+                "JobID": phone.JobID,
+                "PhoneNumber": phone.PhoneNumber,
+                "PhoneTypeName": phone.phone_type.PhoneTypeName if phone.phone_type else None,
+                "JobTitle": job.JobTitle if job else "Unknown Job",
+                "SectionName": section.SectionName if section else "Unknown Section"
+            })
+        return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -261,7 +269,6 @@ def get_phonetypes():
         ])
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 
 # =========================================GET ALL PHONETYPE ID=========================
@@ -473,7 +480,79 @@ def delete_user(user_id):
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
+# -------------------------------jobs-------------------------
+# ====================================GET ALL JOBS==================
+# ---------------------------------- JOBS --------------------------------
+@api_blueprint.route('/api/jobs', methods=['GET'])
+def get_jobs():
+    try:
+        jobs = Jobs.query.all()
+        return jsonify([{
+            "JobID": job.JobID,
+            "JobTitle": job.JobTitle,
+            "SectionID": job.SectionID
+        } for job in jobs])
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
+
+@api_blueprint.route('/api/jobs/<int:job_id>', methods=['GET'])
+def get_job(job_id):
+    try:
+        job = Jobs.query.get(job_id)
+        if not job:
+            return jsonify({"error": "Job not found"}), 404
+        return jsonify({
+            "JobID": job.JobID,
+            "JobTitle": job.JobTitle,
+            "SectionID": job.SectionID,
+            "SectionName": job.section.SectionName if job.section else None
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Delete a job by ID
+@api_blueprint.route('/api/jobs/<int:job_id>', methods=['DELETE'])
+def delete_job(job_id):
+    try:
+        job = Jobs.query.get(job_id)
+        if not job:
+            return jsonify({"error": "Job not found"}), 404
+        db.session.delete(job)
+        db.session.commit()
+        return jsonify({"message": "Job deleted"})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+# Update a job by ID
+@api_blueprint.route('/api/jobs/<int:job_id>', methods=['PUT'])
+def update_job(job_id):
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+    try:
+        job = Jobs.query.get(job_id)
+        if not job:
+            return jsonify({"error": "Job not found"}), 404
+        if 'JobTitle' in data:
+            job.JobTitle = data['JobTitle']
+        if 'SectionID' in data:
+            job.SectionID = data['SectionID']
+        db.session.commit()
+        return jsonify({
+            "JobID": job.JobID,
+            "JobTitle": job.JobTitle,
+            "SectionID": job.SectionID,
+            "SectionName": job.section.SectionName if job.section else None,
+            "message": "Job updated"
+        })
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({"error": "Invalid SectionID or database constraint violation"}), 400
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
 
 # ==================================== LOGIN==============
 @api_blueprint.route('/login', methods=['POST'])

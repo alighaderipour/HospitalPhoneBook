@@ -1,96 +1,75 @@
--- Sections table: Stores organizational sections/departments
+-- Table: Sections
 CREATE TABLE Sections (
-    SectionID INT PRIMARY KEY IDENTITY(1,1),
+    SectionID INT IDENTITY(1,1) PRIMARY KEY,
     SectionName NVARCHAR(100) NOT NULL UNIQUE,
-    Description NVARCHAR(255) NULL
+    Description NVARCHAR(255)
 );
-
--- Jobs table: Stores job roles within the organization
+use phonebooks
+-- Table: Jobs
 CREATE TABLE Jobs (
-    JobID INT PRIMARY KEY IDENTITY(1,1),
+    JobID INT IDENTITY(1,1) PRIMARY KEY,
     JobTitle NVARCHAR(100) NOT NULL,
     SectionID INT NOT NULL,
     FOREIGN KEY (SectionID) REFERENCES Sections(SectionID) ON DELETE CASCADE
 );
 
--- PhoneTypes table: Stores types of phone numbers (e.g., Mobile, Office)
+-- Table: PhoneTypes
 CREATE TABLE PhoneTypes (
-    PhoneTypeID INT PRIMARY KEY IDENTITY(1,1),
+    PhoneTypeID INT IDENTITY(1,1) PRIMARY KEY,
     PhoneTypeName NVARCHAR(30) NOT NULL UNIQUE
 );
 
--- PhoneNumbers table: Stores phone numbers associated with jobs
+-- Table: PhoneNumbers
 CREATE TABLE PhoneNumbers (
-    PhoneID INT PRIMARY KEY IDENTITY(1,1),
+    PhoneID INT IDENTITY(1,1) PRIMARY KEY,
     JobID INT NOT NULL,
-    PhoneNumber NVARCHAR(20) NOT NULL, -- Increased length for international formats
-    PhoneTypeID INT NULL, -- Changed to INT to match PhoneTypes
+    PhoneNumber NVARCHAR(20) NOT NULL,
+    PhoneTypeID INT,
     FOREIGN KEY (JobID) REFERENCES Jobs(JobID) ON DELETE CASCADE,
-    FOREIGN KEY (PhoneTypeID) REFERENCES PhoneTypes(PhoneTypeID) ON DELETE SET NULL
+    FOREIGN KEY (PhoneTypeID) REFERENCES PhoneTypes(PhoneTypeID)
 );
 
--- Users table: Stores user information, linking to section and job
+-- Table: Users
 CREATE TABLE Users (
-    UserID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT IDENTITY(1,1) PRIMARY KEY,
     FirstName NVARCHAR(50) NOT NULL,
     LastName NVARCHAR(50) NOT NULL,
     SectionID INT NOT NULL,
     JobID INT NOT NULL,
-    Email NVARCHAR(100) NULL UNIQUE, -- Reintroduced for contact/login
-    is_admin BIT NOT NULL DEFAULT 0, -- Admin flag
-    IsActive BIT NOT NULL DEFAULT 1, -- Active or inactive status
-    FOREIGN KEY (SectionID) REFERENCES Sections(SectionID) ON DELETE NO ACTION,
-    FOREIGN KEY (JobID) REFERENCES Jobs(JobID) ON DELETE NO ACTION
+    Email NVARCHAR(100) UNIQUE,
+    is_admin BIT NOT NULL DEFAULT 0,
+    IsActive BIT NOT NULL DEFAULT 1,
+    password NVARCHAR(255) UNIQUE,
+    FOREIGN KEY (SectionID) REFERENCES Sections(SectionID) ON DELETE CASCADE,
+    FOREIGN KEY (JobID) REFERENCES Jobs(JobID)
 );
 
--- 1. Insert Sections
+
+------------------------inserts-----------------
 INSERT INTO Sections (SectionName, Description)
 VALUES
-    ('IT', 'Information Technology Department'),
-    ('HR', 'Human Resources Department');
+('IT Department', 'Handles software and hardware infrastructure'),
+('HR Department', 'Manages hiring and employee relations');
 
--- 2. Insert Jobs (with proper Section relationships)
+
 INSERT INTO Jobs (JobTitle, SectionID)
 VALUES
-    ('Programmer', 1),          -- IT Section (SectionID 1)
-    ('IT Manager', 1),          -- IT Section
-    ('HR Specialist', 2);       -- HR Section (SectionID 2)
+('Software Engineer', 1),
+('Recruiter', 2);
 
--- 3. Insert Phone Types
 INSERT INTO PhoneTypes (PhoneTypeName)
 VALUES
-    ('Mobile'),
-    ('Office'),
-    ('Fax');
+('Office'),
+('Mobile'),
+('Home');
 
--- 4. Insert Phone Numbers for Jobs
+
 INSERT INTO PhoneNumbers (JobID, PhoneNumber, PhoneTypeID)
 VALUES
-    -- Programmer (JobID 1) numbers
-    (1, '+1-555-123-4567', 1),  -- Mobile
-    (1, '+1-555-765-4321', 2),  -- Office
+(1, '+1234567890', 2),
+(2, '+9876543210', 1);
 
-    -- IT Manager (JobID 2) numbers
-    (2, '+1-555-888-9999', 2),  -- Office
-    (2, '+1-555-222-3333', 1),  -- Mobile
-
-    -- HR Specialist (JobID 3) numbers
-    (3, '+1-555-444-5555', 1);  -- Mobile
-
--- 5. Insert Users
-INSERT INTO Users (FirstName, LastName, SectionID, JobID, Email, is_admin, IsActive)
+INSERT INTO Users (FirstName, LastName, SectionID, JobID, Email, is_admin, IsActive, password)
 VALUES
-    ('John', 'Doe', 1, 1, 'john.doe@company.com', 0, 1),       -- Programmer
-    ('Jane', 'Smith', 1, 2, 'jane.smith@company.com', 1, 1),   -- IT Manager (admin)
-    ('Alice', 'Johnson', 2, 3, 'alice.j@company.com', 0, 1);   -- HR Specialist
-
-
-
-	UPDATE PhoneNumbers
-SET PhoneNumber = '+1-555-NEW-NUMB'
-WHERE JobID = 1 AND PhoneTypeID = 2
-
-
-UPDATE Users
-SET is_admin = 1
-WHERE UserID = 3
+('John', 'Doe', 1, 1, 'john.doe@example.com', 0, 1, 'securepassword123'),
+('Jane', 'Smith', 2, 2, 'jane.smith@example.com', 1, 1, 'adminpass456');

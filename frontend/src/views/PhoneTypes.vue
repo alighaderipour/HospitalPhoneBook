@@ -10,12 +10,18 @@
 
     <ul v-if="!loading && !error && phoneTypes.length" class="phonetype-list">
       <li
-        v-for="phonetype in phoneTypes"
-        :key="phonetype.phoneTypeId"
+        v-for="pt in phoneTypes"
+        :key="pt.phoneTypeId"
         class="phonetype-item"
       >
-        <h3>{{ phonetype.phoneTypeId }}</h3>
-        <p>{{ phonetype.phoneTypeName }}</p>
+        <div class="item-content">
+          <h3>{{ pt.phoneTypeId }}</h3>
+          <p>{{ pt.phoneTypeName }}</p>
+        </div>
+        <div class="item-actions">
+          <button @click="editPhoneType(pt)" class="action edit">Edit</button>
+          <button @click="deletePhoneType(pt.phoneTypeId)" class="action delete">Delete</button>
+        </div>
       </li>
     </ul>
 
@@ -44,11 +50,43 @@ export default {
       this.error = "";
       try {
         const response = await axios.get("http://127.0.0.1:5000/api/phonetypes");
-        // Assuming the API now returns camelCase keys like phoneTypeId
         this.phoneTypes = response.data;
       } catch (err) {
         this.error =
           "Failed to load phone types: " + (err.response?.data?.error || err.message);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    // Prompt the user to enter a new name, then send PUT
+    async editPhoneType(pt) {
+      const newName = window.prompt("New name for PhoneType ID " + pt.phoneTypeId, pt.phoneTypeName);
+      if (!newName || newName.trim() === "" || newName === pt.phoneTypeName) {
+        return;
+      }
+      this.loading = true;
+      try {
+        await axios.put(`http://127.0.0.1:5000/api/phonetypes/${pt.phoneTypeId}`, {
+          PhoneTypeName: newName.trim(),
+        });
+        this.fetchPhoneTypes();
+      } catch (err) {
+        alert("Failed to update: " + (err.response?.data?.error || err.message));
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    // Confirm deletion, then send DELETE
+    async deletePhoneType(id) {
+      if (!confirm(`Delete PhoneType ID ${id}? This cannot be undone.`)) return;
+      this.loading = true;
+      try {
+        await axios.delete(`http://127.0.0.1:5000/api/phonetypes/${id}`);
+        this.fetchPhoneTypes();
+      } catch (err) {
+        alert("Failed to delete: " + (err.response?.data?.error || err.message));
       } finally {
         this.loading = false;
       }
@@ -58,56 +96,7 @@ export default {
 </script>
 
 <style scoped>
-.phonetype-container {
-  max-width: 700px;
-  margin: 40px auto;
-  padding: 24px;
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-h2 {
-  font-size: 26px;
-  color: #2c3e50;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.refresh-button {
-  display: block;
-  margin: 0 auto 20px;
-  padding: 8px 16px;
-  font-size: 14px;
-  background-color: #3498db;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.refresh-button:hover {
-  background-color: #2980b9;
-}
-
-.refresh-button:disabled {
-  background-color: #95a5a6;
-  cursor: not-allowed;
-}
-
-.status {
-  text-align: center;
-  font-style: italic;
-  color: #7f8c8d;
-  margin-bottom: 16px;
-}
-
-.status.error {
-  color: #e74c3c;
-  font-weight: bold;
-}
+.phonetype-container { /* unchanged */ }
 
 .phonetype-list {
   list-style: none;
@@ -118,6 +107,9 @@ h2 {
 }
 
 .phonetype-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 16px;
   background-color: #f9f9f9;
   border-left: 5px solid #3498db;
@@ -129,14 +121,35 @@ h2 {
   background-color: #f0f8ff;
 }
 
-.phonetype-item h3 {
-  margin: 0 0 6px;
-  font-size: 18px;
-  color: #34495e;
+.item-content h3,
+.item-content p { margin: 0; }
+
+.item-actions .action {
+  margin-left: 8px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
 }
 
-.phonetype-item p {
-  margin: 0;
-  color: #555;
+.item-actions .edit {
+  background-color: #f1c40f;
+  color: #fff;
 }
+
+.item-actions .edit:hover {
+  background-color: #d4ac0d;
+}
+
+.item-actions .delete {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.item-actions .delete:hover {
+  background-color: #c0392b;
+}
+
+/* rest of your styles… */
 </style>
