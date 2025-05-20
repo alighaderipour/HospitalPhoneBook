@@ -271,6 +271,7 @@ def get_phonetypes():
         return jsonify({"error": str(e)}), 500
 
 
+
 # =========================================GET ALL PHONETYPE ID=========================
 
 @api_blueprint.route('/api/phonetypes/<int:phonetype_id>', methods=['GET'])
@@ -363,6 +364,10 @@ def get_users():
             "FirstName": user.FirstName,
             "LastName": user.LastName,
             "Email": user.Email,
+            "SectionID": user.SectionID,
+            "SectionName": user.section.SectionName if user.section else None,
+            "JobID": user.JobID,
+            "JobTitle": user.job.JobTitle if user.job else None,
             "is_admin": user.is_admin,
             "IsActive": user.IsActive
         } for user in users])

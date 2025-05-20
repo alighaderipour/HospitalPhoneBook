@@ -9,16 +9,108 @@
     <div v-if="loading" class="status">Loading...</div>
     <div v-if="error" class="status error">{{ error }}</div>
 
-    <ul v-if="users.length" class="user-list">
-      <li v-for="user in users" :key="user.UserID" class="user-item">
-        <h3>{{ user.FirstName }} {{ user.LastName }}</h3>
-        <p><strong>Email:</strong> {{ user.Email }}</p>
-        <p><strong>Admin:</strong> {{ user.is_admin ? "Yes" : "No" }}</p>
-        <p><strong>Active:</strong> {{ user.IsActive ? "Active" : "Inactive" }}</p>
+    <ul v-if="users.length && !loading && !error" class="user-list">
+      <li
+        v-for="usr in users"
+        :key="usr.UserID"
+        class="user-item"
+      >
+        <!-- DISPLAY MODE -->
+        <div v-if="editingId !== usr.UserID" class="item-content">
+          <h3>{{ usr.FirstName }} {{ usr.LastName }}</h3>
+          <p><strong>Email:</strong> {{ usr.Email }}</p>
+          <p><strong>Section:</strong> {{ usr.SectionName }}</p>
+          <p><strong>Job:</strong> {{ usr.JobTitle }}</p>
+          <p><strong>Admin:</strong> {{ usr.is_admin ? "Yes" : "No" }}</p>
+          <p><strong>Active:</strong> {{ usr.IsActive ? "Active" : "Inactive" }}</p>
+        </div>
+
+        <!-- EDIT MODE -->
+        <div v-else class="item-content edit-mode">
+          <input
+            v-model="form.FirstName"
+            placeholder="First Name"
+            class="edit-input"
+          />
+          <input
+            v-model="form.LastName"
+            placeholder="Last Name"
+            class="edit-input"
+          />
+          <input
+            v-model="form.Email"
+            placeholder="Email"
+            class="edit-input"
+          />
+
+          <label>
+            Section:
+            <select v-model="form.SectionID" class="edit-select">
+              <option disabled value="">-- select section --</option>
+              <option
+                v-for="sec in sectionsList"
+                :key="sec.SectionID"
+                :value="sec.SectionID"
+              >
+                {{ sec.SectionName }}
+              </option>
+            </select>
+          </label>
+
+          <label>
+            Job:
+            <select v-model="form.JobID" class="edit-select">
+              <option disabled value="">-- select job --</option>
+              <option
+                v-for="job in jobsList"
+                :key="job.JobID"
+                :value="job.JobID"
+              >
+                {{ job.JobTitle }}
+              </option>
+            </select>
+          </label>
+
+          <label>
+            Admin:
+            <input type="checkbox" v-model="form.is_admin" />
+          </label>
+          <label>
+            Active:
+            <input type="checkbox" v-model="form.IsActive" />
+          </label>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="item-actions">
+          <button
+            v-if="editingId !== usr.UserID"
+            @click="startEdit(usr)"
+            class="action edit"
+          >Edit</button>
+          <button
+            v-else
+            @click="saveEdit(usr.UserID)"
+            class="action save"
+            :disabled="saving"
+          >Save</button>
+          <button
+            v-if="editingId === usr.UserID"
+            @click="cancelEdit"
+            class="action cancel"
+            :disabled="saving"
+          >Cancel</button>
+          <button
+            v-if="editingId !== usr.UserID"
+            @click="deleteUser(usr.UserID)"
+            class="action delete"
+            :disabled="loading"
+          >Delete</button>
+        </div>
       </li>
     </ul>
 
-    <p v-else class="status">No users found</p>
+    <p v-else-if="!loading && !error" class="status">No users found</p>
   </div>
 </template>
 
@@ -30,25 +122,128 @@ export default {
   data() {
     return {
       users: [],
+      sectionsList: [],
+      jobsList: [],
       loading: false,
+      saving: false,
       error: "",
+      editingId: null,
+      form: {
+        FirstName: "",
+        LastName: "",
+        Email: "",
+        SectionID: "",
+        JobID: "",
+        is_admin: false,
+        IsActive: true,
+      },
     };
   },
-  created() {
+  async created() {
+    await Promise.all([this.fetchSectionsList(), this.fetchJobsList()]);
     this.fetchUsers();
   },
   methods: {
     async fetchUsers() {
       this.loading = true;
       this.error = "";
-
+      this.editingId = null;
       try {
-        const response = await axios.get("http://127.0.0.1:5000/api/users");
-        console.log("Fetched users:", response.data); // Debugging
-        this.users = response.data;
-      } catch (error) {
-        console.error("API Error:", error); // Debugging
-        this.error = "Failed to load users: " + (error.response?.data?.error || error.message);
+        const { data } = await axios.get("http://127.0.0.1:5000/api/users");
+        // Expect each user to include SectionID, SectionName, JobID, JobTitle
+        this.users = data;
+      } catch (err) {
+        this.error =
+          "Failed to load users: " + (err.response?.data?.error || err.message);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async fetchSectionsList() {
+      try {
+        const { data } = await axios.get("http://127.0.0.1:5000/api/sections");
+        this.sectionsList = data;
+      } catch {
+        this.sectionsList = [];
+      }
+    },
+
+    async fetchJobsList() {
+      try {
+        const { data } = await axios.get("http://127.0.0.1:5000/api/jobs");
+        this.jobsList = data;
+      } catch {
+        this.jobsList = [];
+      }
+    },
+
+    startEdit(usr) {
+      this.editingId = usr.UserID;
+      this.form = {
+        FirstName: usr.FirstName,
+        LastName: usr.LastName,
+        Email: usr.Email,
+        SectionID: usr.SectionID || "",
+        JobID: usr.JobID || "",
+        is_admin: usr.is_admin,
+        IsActive: usr.IsActive,
+      };
+    },
+
+    cancelEdit() {
+      this.editingId = null;
+      this.form = {
+        FirstName: "",
+        LastName: "",
+        Email: "",
+        SectionID: "",
+        JobID: "",
+        is_admin: false,
+        IsActive: true,
+      };
+    },
+
+    async saveEdit(id) {
+      // Basic validation
+      if (
+        !this.form.FirstName.trim() ||
+        !this.form.LastName.trim() ||
+        !this.form.Email.trim() ||
+        !this.form.SectionID ||
+        !this.form.JobID
+      ) {
+        alert("All fields are required, including Section and Job.");
+        return;
+      }
+
+      this.saving = true;
+      try {
+        await axios.put(`http://127.0.0.1:5000/api/users/${id}`, {
+  FirstName: this.form.FirstName.trim(),
+  LastName:  this.form.LastName.trim(),
+  Email:     this.form.Email.trim(),
+  SectionID: Number(this.form.SectionID),
+  JobID:     Number(this.form.JobID),
+  is_admin:  this.form.is_admin,
+  IsActive:  this.form.IsActive,
+});
+        await this.fetchUsers();
+      } catch (err) {
+        alert("Failed to update user: " + (err.response?.data?.error || err.message));
+      } finally {
+        this.saving = false;
+      }
+    },
+
+    async deleteUser(id) {
+      if (!confirm(`Delete User ID ${id}? This cannot be undone.`)) return;
+      this.loading = true;
+      try {
+        await axios.delete(`http://127.0.0.1:5000/api/users/${id}`);
+        await this.fetchUsers();
+      } catch (err) {
+        alert("Failed to delete user: " + (err.response?.data?.error || err.message));
       } finally {
         this.loading = false;
       }
@@ -58,85 +253,15 @@ export default {
 </script>
 
 <style scoped>
-.users-container {
-  max-width: 700px;
-  margin: 40px auto;
-  padding: 24px;
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
+/* your existing styles… */
 
-h2 {
-  font-size: 26px;
-  color: #2c3e50;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.status {
-  text-align: center;
-  font-style: italic;
-  color: #7f8c8d;
-  margin-bottom: 16px;
-}
-
-.status.error {
-  color: #e74c3c;
-  font-weight: bold;
-}
-
-.user-list {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.user-item {
-  padding: 16px;
-  background-color: #f9f9f9;
-  border-left: 5px solid #3498db;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
-}
-
-.user-item:hover {
-  background-color: #f0f8ff;
-}
-
-.user-item h3 {
-  margin: 0 0 6px;
-  font-size: 18px;
-  color: #34495e;
-}
-
-.user-item p {
-  margin: 0;
-  color: #555;
-}
-
-.refresh-button {
+.edit-select {
   display: block;
-  margin: 0 auto 20px;
-  padding: 8px 16px;
+  width: 100%;
+  margin: 6px 0 12px;
+  padding: 8px;
   font-size: 14px;
-  background-color: #3498db;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.refresh-button:hover {
-  background-color: #2980b9;
-}
-
-.refresh-button:disabled {
-  background-color: #95a5a6;
-  cursor: not-allowed;
+  border: 1px solid #ccd0d5;
+  border-radius: 4px;
 }
 </style>

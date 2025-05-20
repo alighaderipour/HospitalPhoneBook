@@ -14,21 +14,39 @@
     <!-- Status messages -->
     <div v-if="loading" class="status">Searching...</div>
     <div v-if="error" class="status error">{{ error }}</div>
-    <div v-if="results.length === 0 && !loading && !error" class="status">No results found.</div>
+    <div
+      v-if="!loading && !error && results.length === 0 && tried"
+      class="status"
+    >
+      No results found.
+    </div>
 
     <!-- Results list -->
     <div v-if="results.length" class="results">
       <div v-for="user in results" :key="user.UserID" class="result-card">
         <h3>{{ user.FirstName }} {{ user.LastName }}</h3>
-        <p><strong>Section:</strong> {{ user.SectionName }}</p>
-        <p><strong>Job Title:</strong> {{ user.JobTitle }}</p>
-        <div v-if="user.PhoneNumbers.length">
-          <p><strong>Phone Numbers:</strong></p>
-          <ul>
-            <li v-for="(phone, idx) in user.PhoneNumbers" :key="idx">
-              {{ phone.PhoneNumber }} ({{ phone.PhoneTypeName || 'Unknown' }})
+
+        <p>
+          <strong>Section:</strong>
+          {{ user.SectionName || "—" }}
+        </p>
+        <p>
+          <strong>Job Title:</strong>
+          {{ user.JobTitle || "—" }}
+        </p>
+
+        <div>
+          <strong>Phone Numbers:</strong>
+          <ul v-if="user.PhoneNumbers.length">
+            <li
+              v-for="(phone, idx) in user.PhoneNumbers"
+              :key="idx"
+            >
+              {{ phone.PhoneNumber }}
+              <em>({{ phone.PhoneTypeName || "Unknown" }})</em>
             </li>
           </ul>
+          <p v-else class="no-phone">No phone numbers</p>
         </div>
       </div>
     </div>
@@ -39,18 +57,22 @@
 import axios from "axios";
 
 export default {
+  name: "SearchDirectory",
   data() {
     return {
       query: "",
       results: [],
       loading: false,
       error: "",
+      tried: false, // to show "no results" only after first search
     };
   },
   methods: {
     async performSearch() {
+      this.tried = true;
       if (!this.query.trim()) {
         this.error = "Please enter a search term.";
+        this.results = [];
         return;
       }
 
@@ -60,7 +82,7 @@ export default {
 
       try {
         const response = await axios.get("http://127.0.0.1:5000/search", {
-          params: { q: this.query },
+          params: { q: this.query.trim() },
         });
         this.results = response.data;
       } catch (err) {
@@ -177,4 +199,9 @@ export default {
   color: #555;
 }
 
+.no-phone {
+  font-style: italic;
+  color: #999;
+  margin: 4px 0 0;
+}
 </style>
