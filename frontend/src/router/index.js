@@ -3,6 +3,7 @@ import Home from "../views/Home.vue";
 import Phonenumbers from "../views/Phonenumbers.vue";
 import Login from "../views/Login.vue";
 import Section from "../views/Sections.vue";
+import PhoneTypes from "../views/PhoneTypes.vue";
 
 const routes = [
   {
@@ -25,6 +26,11 @@ const routes = [
     name: "sections",
     component: Section,
   },
+    {
+    path: "/phonetypes",
+    name: "phonetypes",
+    component: PhoneTypes,
+  }
 ];
 
 const router = createRouter({

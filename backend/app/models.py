@@ -20,7 +20,7 @@ class PhoneTypes(db.Model):
     __tablename__ = 'PhoneTypes'
     PhoneTypeID = db.Column(db.Integer, primary_key=True)
     PhoneTypeName = db.Column(db.String(30), unique=True, nullable=False)
-    phone_numbers = db.relationship('PhoneNumbers', backref='phone_type')
+
 
 class PhoneNumbers(db.Model):
     __tablename__ = 'PhoneNumbers'
@@ -28,6 +28,8 @@ class PhoneNumbers(db.Model):
     JobID = db.Column(db.Integer, db.ForeignKey('Jobs.JobID'), nullable=False)
     PhoneNumber = db.Column(db.String(20), nullable=False)
     PhoneTypeID = db.Column(db.Integer, db.ForeignKey('PhoneTypes.PhoneTypeID'))
+    phone_type = db.relationship("PhoneTypes", backref="phone_numbers", lazy=True)
+
 
 class Users(db.Model):
     __tablename__ = 'Users'

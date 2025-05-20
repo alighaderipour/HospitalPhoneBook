@@ -1,6 +1,9 @@
 <template>
   <div class="section-container">
     <h2>Section List</h2>
+    <button @click="fetchSections" class="refresh-button" :disabled="loading">
+      {{ loading ? 'Loading...' : 'Reload' }}
+    </button>
     <div v-if="loading" class="status">Loading...</div>
     <div v-if="error" class="status error">{{ error }}</div>
 
@@ -103,5 +106,27 @@ h2 {
 .section-item p {
   margin: 0;
   color: #555;
+}
+
+.refresh-button {
+  display: block;
+  margin: 0 auto 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.refresh-button:hover {
+  background-color: #2980b9;
+}
+
+.refresh-button:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
 }
 </style>

@@ -1,26 +1,25 @@
 <template>
-  <div class="phone-container">
-    <h2>Phone Number List</h2>
+  <div class="phonetype-container">
+    <h2>Phone Type List</h2>
 
-    <button @click="fetchPhonenumbers" class="refresh-button" :disabled="loading">
+    <button @click="fetchPhoneTypes" class="refresh-button" :disabled="loading">
       {{ loading ? 'Loading...' : 'Reload' }}
     </button>
 
     <div v-if="error" class="status error">{{ error }}</div>
 
-    <ul v-if="!loading && !error && phonenumbers.length" class="phone-list">
+    <ul v-if="!loading && !error && phoneTypes.length" class="phonetype-list">
       <li
-        v-for="phonenumber in phonenumbers"
-        :key="phonenumber.PhoneID"
-        class="phone-item"
+        v-for="phonetype in phoneTypes"
+        :key="phonetype.phoneTypeId"
+        class="phonetype-item"
       >
-        <strong>Job ID:</strong> {{ phonenumber.JobID }} <br />
-        <strong>Phone:</strong> {{ phonenumber.PhoneNumber }} <br />
-        <strong>Type:</strong> {{ phonenumber.PhoneTypeName || 'Unknown' }}
+        <h3>{{ phonetype.phoneTypeId }}</h3>
+        <p>{{ phonetype.phoneTypeName }}</p>
       </li>
     </ul>
 
-    <p v-else-if="!loading && !error" class="status">No phone numbers found.</p>
+    <p v-else-if="!loading && !error" class="status">No phone types found.</p>
   </div>
 </template>
 
@@ -28,26 +27,28 @@
 import axios from "axios";
 
 export default {
-  name: "PhoneNumberList",
+  name: "PhoneType",
   data() {
     return {
-      phonenumbers: [],
+      phoneTypes: [],
       loading: false,
       error: "",
     };
   },
   created() {
-    this.fetchPhonenumbers();
+    this.fetchPhoneTypes();
   },
   methods: {
-    async fetchPhonenumbers() {
+    async fetchPhoneTypes() {
       this.loading = true;
       this.error = "";
       try {
-        const response = await axios.get("http://127.0.0.1:5000/api/phones/phonenumbers");
-        this.phonenumbers = response.data;
-      } catch (error) {
-        this.error = "Failed to load phone numbers: " + (error.response?.data?.error || error.message);
+        const response = await axios.get("http://127.0.0.1:5000/api/phonetypes");
+        // Assuming the API now returns camelCase keys like phoneTypeId
+        this.phoneTypes = response.data;
+      } catch (err) {
+        this.error =
+          "Failed to load phone types: " + (err.response?.data?.error || err.message);
       } finally {
         this.loading = false;
       }
@@ -57,11 +58,11 @@ export default {
 </script>
 
 <style scoped>
-.phone-container {
+.phonetype-container {
   max-width: 700px;
   margin: 40px auto;
   padding: 24px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
   background-color: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -108,7 +109,7 @@ h2 {
   font-weight: bold;
 }
 
-.phone-list {
+.phonetype-list {
   list-style: none;
   padding: 0;
   display: flex;
@@ -116,7 +117,7 @@ h2 {
   gap: 16px;
 }
 
-.phone-item {
+.phonetype-item {
   padding: 16px;
   background-color: #f9f9f9;
   border-left: 5px solid #3498db;
@@ -124,11 +125,18 @@ h2 {
   transition: background-color 0.3s ease;
 }
 
-.phone-item:hover {
+.phonetype-item:hover {
   background-color: #f0f8ff;
 }
 
-.phone-item strong {
+.phonetype-item h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
   color: #34495e;
+}
+
+.phonetype-item p {
+  margin: 0;
+  color: #555;
 }
 </style>

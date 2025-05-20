@@ -253,10 +253,12 @@ def delete_section(section_id):
 def get_phonetypes():
     try:
         phonetypes = PhoneTypes.query.all()
-        return jsonify([{
-            "PhoneTypeID": pt.PhoneTypeID,
-            "PhoneTypeName": pt.PhoneTypeName
-        } for pt in phonetypes])
+        return jsonify([
+            {
+                "phoneTypeId": pt.PhoneTypeID,
+                "phoneTypeName": pt.PhoneTypeName
+            } for pt in phonetypes
+        ])
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
