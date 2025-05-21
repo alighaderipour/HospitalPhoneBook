@@ -40,7 +40,7 @@ CREATE TABLE Users (
     Email NVARCHAR(100) UNIQUE,
     is_admin BIT NOT NULL DEFAULT 0,
     IsActive BIT NOT NULL DEFAULT 1,
-    password NVARCHAR(255) UNIQUE,
+    password NVARCHAR(255) ,
     FOREIGN KEY (SectionID) REFERENCES Sections(SectionID) ON DELETE CASCADE,
     FOREIGN KEY (JobID) REFERENCES Jobs(JobID)
 );
