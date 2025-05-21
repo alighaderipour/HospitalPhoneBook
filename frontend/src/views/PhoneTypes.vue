@@ -2,9 +2,24 @@
   <div class="phonetype-container">
     <h2>Phone Type List</h2>
 
-    <button @click="fetchPhoneTypes" class="refresh-button" :disabled="loading">
-      {{ loading ? 'Loading...' : 'Reload' }}
-    </button>
+    <div class="actions">
+      <button @click="fetchPhoneTypes" class="refresh-button" :disabled="loading">
+        {{ loading ? 'Loading...' : 'Reload' }}
+      </button>
+    </div>
+
+    <!-- Add new phone type section -->
+    <div class="add-section">
+      <input
+        v-model="newPhoneTypeName"
+        type="text"
+        placeholder="Enter new phone type name"
+        class="add-input"
+      />
+      <button @click="addNewPhoneType" class="add-button" :disabled="loading || !newPhoneTypeName.trim()">
+        Add New
+      </button>
+    </div>
 
     <div v-if="error" class="status error">{{ error }}</div>
 
@@ -29,6 +44,7 @@
   </div>
 </template>
 
+
 <script>
 import axios from "axios";
 
@@ -39,6 +55,7 @@ export default {
       phoneTypes: [],
       loading: false,
       error: "",
+      newPhoneTypeName: "",
     };
   },
   created() {
@@ -59,7 +76,6 @@ export default {
       }
     },
 
-    // Prompt the user to enter a new name, then send PUT
     async editPhoneType(pt) {
       const newName = window.prompt("New name for PhoneType ID " + pt.phoneTypeId, pt.phoneTypeName);
       if (!newName || newName.trim() === "" || newName === pt.phoneTypeName) {
@@ -78,7 +94,6 @@ export default {
       }
     },
 
-    // Confirm deletion, then send DELETE
     async deletePhoneType(id) {
       if (!confirm(`Delete PhoneType ID ${id}? This cannot be undone.`)) return;
       this.loading = true;
@@ -91,9 +106,28 @@ export default {
         this.loading = false;
       }
     },
+
+    async addNewPhoneType() {
+      const name = this.newPhoneTypeName.trim();
+      if (!name) return;
+
+      this.loading = true;
+      try {
+        await axios.post("http://127.0.0.1:5000/api/phonetypes", {
+          PhoneTypeName: name,
+        });
+        this.newPhoneTypeName = "";
+        this.fetchPhoneTypes();
+      } catch (err) {
+        alert("Failed to add: " + (err.response?.data?.error || err.message));
+      } finally {
+        this.loading = false;
+      }
+    },
   },
 };
 </script>
+
 
 <style scoped>
 .phonetype-container { /* unchanged */ }
@@ -149,6 +183,59 @@ export default {
 
 .item-actions .delete:hover {
   background-color: #c0392b;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.add-button {
+  background-color: #2ecc71;
+  color: #fff;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-button:hover {
+  background-color: #27ae60;
+}
+.actions {
+  margin-bottom: 1rem;
+}
+
+.add-section {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.add-input {
+  flex: 1;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.add-button {
+  background-color: #2ecc71;
+  color: #fff;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.add-button:hover:enabled {
+  background-color: #27ae60;
 }
 
 /* rest of your styles… */

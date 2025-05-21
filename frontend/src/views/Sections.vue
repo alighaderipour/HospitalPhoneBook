@@ -1,9 +1,34 @@
 <template>
   <div class="section-container">
     <h2>Section List</h2>
-    <button @click="fetchSections" class="refresh-button" :disabled="loading">
-      {{ loading ? 'Loading...' : 'Reload' }}
-    </button>
+    <div class="top-actions">
+  <button @click="fetchSections" class="refresh-button" :disabled="loading">
+    {{ loading ? 'Loading...' : 'Reload' }}
+  </button>
+  <button @click="showAddForm = !showAddForm" class="add-button">
+    {{ showAddForm ? 'Cancel' : 'Add Section' }}
+  </button>
+</div>
+
+    <!-- Add Section Form -->
+<!-- Add Section Form -->
+<!-- Add Section Form -->
+<div class="add-section-form" v-if="showAddForm">
+  <input
+    v-model="newSection.SectionName"
+    placeholder="New Section Name"
+    class="edit-input"
+  />
+  <textarea
+    v-model="newSection.Description"
+    placeholder="Description (optional)"
+    class="edit-textarea"
+  ></textarea>
+  <button @click="addSection" :disabled="adding" class="action save">
+    {{ adding ? 'Adding...' : 'Add Section' }}
+  </button>
+</div>
+
 
     <div v-if="loading" class="status">Loading...</div>
     <div v-if="error" class="status error">{{ error }}</div>
@@ -81,7 +106,13 @@ export default {
       form: {
         SectionName: "",
         Description: ""
-      }
+      },
+      showAddForm: false,
+      newSection: {
+  SectionName: "",
+  Description: ""
+},
+adding: false,
     };
   },
   created() {
@@ -146,7 +177,28 @@ export default {
       } finally {
         this.loading = false;
       }
-    }
+    },
+    async addSection() {
+  if (!this.newSection.SectionName.trim()) {
+    alert("Section Name is required.");
+    return;
+  }
+  this.adding = true;
+  try {
+    await axios.post("http://127.0.0.1:5000/api/sections", {
+      SectionName: this.newSection.SectionName.trim(),
+      Description: this.newSection.Description.trim()
+    });
+    this.newSection.SectionName = "";
+    this.newSection.Description = "";
+    await this.fetchSections();
+  } catch (err) {
+    alert("Failed to add: " + (err.response?.data?.error || err.message));
+  } finally {
+    this.adding = false;
+  }
+}
+
   }
 };
 </script>
@@ -237,4 +289,16 @@ export default {
 }
 
 .refresh-button { /* unchanged */ }
+
+.add-section-form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background-color: #eef6fc;
+  border: 1px solid #d0e2f2;
+  border-radius: 8px;
+}
+
 </style>

@@ -1,9 +1,14 @@
 <template>
   <div class="jobs-container">
     <h2>Job List</h2>
-    <button @click="fetchJobs" class="refresh-button" :disabled="loading">
-      {{ loading ? 'Loading...' : 'Reload' }}
-    </button>
+    <div class="header-buttons">
+      <button @click="fetchJobs" class="refresh-button" :disabled="loading">
+        {{ loading ? 'Loading...' : 'Reload' }}
+      </button>
+      <button @click="showAddForm = !showAddForm" class="add-button">
+        {{ showAddForm ? 'Cancel Add' : 'Add New' }}
+      </button>
+    </div>
 
     <div v-if="loading" class="status">Loading...</div>
     <div v-if="error" class="status error">{{ error }}</div>
@@ -65,6 +70,24 @@
     </ul>
 
     <p v-else-if="!loading && !error" class="status">No jobs found</p>
+
+    <!-- Add Form -->
+    <div v-if="showAddForm" class="add-form">
+      <input v-model="newJob.JobTitle" placeholder="Job Title" class="edit-input" />
+      <select v-model="newJob.SectionID" class="edit-select">
+        <option disabled value="">-- select section --</option>
+        <option
+          v-for="sec in sectionsList"
+          :key="sec.SectionID"
+          :value="sec.SectionID"
+        >
+          {{ sec.SectionName }}
+        </option>
+      </select>
+      <button @click="createJob" :disabled="saving" class="action save">
+        {{ saving ? 'Saving...' : 'Submit' }}
+      </button>
+    </div>
   </div>
 </template>
 
@@ -85,6 +108,11 @@ export default {
         JobTitle: "",
         SectionID: ""
       },
+      showAddForm: false,
+      newJob: {
+        JobTitle: "",
+        SectionID: ""
+      }
     };
   },
   async created() {
@@ -120,7 +148,7 @@ export default {
     startEdit(job) {
       this.editingId = job.JobID;
       this.form.JobTitle = job.JobTitle;
-      this.form.SectionID = job.SectionID + ""; // as string for select
+      this.form.SectionID = job.SectionID + "";
     },
     cancelEdit() {
       this.editingId = null;
@@ -157,7 +185,28 @@ export default {
         this.loading = false;
       }
     },
-  },
+    async createJob() {
+      if (!this.newJob.JobTitle.trim() || !this.newJob.SectionID) {
+        alert("Both Job Title and Section are required.");
+        return;
+      }
+      this.saving = true;
+      try {
+        await axios.post("http://127.0.0.1:5000/api/jobs", {
+          JobTitle: this.newJob.JobTitle.trim(),
+          SectionID: Number(this.newJob.SectionID),
+        });
+        this.newJob.JobTitle = "";
+        this.newJob.SectionID = "";
+        this.showAddForm = false;
+        await this.fetchJobs();
+      } catch (err) {
+        alert("Failed to add job: " + (err.response?.data?.error || err.message));
+      } finally {
+        this.saving = false;
+      }
+    }
+  }
 };
 </script>
 
@@ -245,4 +294,30 @@ h2 {
 .action.cancel { background: #95a5a6; }
 .action.delete { background: #e74c3c; }
 .action:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.header-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.add-button {
+  padding: 8px 16px;
+  background: #27ae60;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.add-button:hover {
+  background: #229954;
+}
+
+.add-form {
+  margin-bottom: 24px;
+  background: #f0f8ff;
+  padding: 16px;
+  border-radius: 8px;
+}
 </style>

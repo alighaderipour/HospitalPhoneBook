@@ -515,6 +515,39 @@ def get_job(job_id):
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+# ===============================POST =======================
+@api_blueprint.route('/jobs', methods=['POST'])
+def add_job():
+    data = request.get_json()
+
+    # Validate required fields
+    if not data or 'JobTitle' not in data or 'SectionID' not in data:
+        return jsonify({'error': 'Missing JobTitle or SectionID'}), 400
+
+    job_title = data['JobTitle']
+    section_id = data['SectionID']
+
+    # Optional: Check if SectionID exists
+    section = Sections.query.get(section_id)
+    if not section:
+        return jsonify({'error': 'SectionID does not exist'}), 400
+
+    # Create new job
+    new_job = Jobs(JobTitle=job_title, SectionID=section_id)
+
+    try:
+        db.session.add(new_job)
+        db.session.commit()
+        return jsonify({
+            'message': 'Job added successfully',
+            'JobID': new_job.JobID,
+            'JobTitle': new_job.JobTitle,
+            'SectionID': new_job.SectionID
+        }), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
 
 # Delete a job by ID
 @api_blueprint.route('/api/jobs/<int:job_id>', methods=['DELETE'])
