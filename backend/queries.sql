@@ -1,14 +1,15 @@
+use phonebooks
 -- Table: Sections
 CREATE TABLE Sections (
     SectionID INT IDENTITY(1,1) PRIMARY KEY,
-    SectionName NVARCHAR(100) NOT NULL UNIQUE,
+    SectionName NVARCHAR(100)  COLLATE Arabic_100_CI_AI_SC_UTF8 NOT NULL  UNIQUE,
     Description NVARCHAR(255)
 );
-use phonebooks
+
 -- Table: Jobs
 CREATE TABLE Jobs (
     JobID INT IDENTITY(1,1) PRIMARY KEY,
-    JobTitle NVARCHAR(100) NOT NULL,
+    JobTitle NVARCHAR(100) COLLATE Arabic_100_CI_AI_SC_UTF8 NOT NULL,
     SectionID INT NOT NULL,
     FOREIGN KEY (SectionID) REFERENCES Sections(SectionID) ON DELETE CASCADE
 );
@@ -16,7 +17,7 @@ CREATE TABLE Jobs (
 -- Table: PhoneTypes
 CREATE TABLE PhoneTypes (
     PhoneTypeID INT IDENTITY(1,1) PRIMARY KEY,
-    PhoneTypeName NVARCHAR(30) NOT NULL UNIQUE
+    PhoneTypeName NVARCHAR(30) COLLATE Arabic_100_CI_AI_SC_UTF8 NOT NULL UNIQUE
 );
 
 -- Table: PhoneNumbers
@@ -32,8 +33,8 @@ CREATE TABLE PhoneNumbers (
 -- Table: Users
 CREATE TABLE Users (
     UserID INT IDENTITY(1,1) PRIMARY KEY,
-    FirstName NVARCHAR(50) NOT NULL,
-    LastName NVARCHAR(50) NOT NULL,
+    FirstName NVARCHAR(50) COLLATE Arabic_100_CI_AI_SC_UTF8 NOT NULL,
+    LastName NVARCHAR(50) COLLATE Arabic_100_CI_AI_SC_UTF8 NOT NULL,
     SectionID INT NOT NULL,
     JobID INT NOT NULL,
     Email NVARCHAR(100) UNIQUE,
@@ -48,28 +49,32 @@ CREATE TABLE Users (
 ------------------------inserts-----------------
 INSERT INTO Sections (SectionName, Description)
 VALUES
-('IT Department', 'Handles software and hardware infrastructure'),
-('HR Department', 'Manages hiring and employee relations');
+(N'فاوا', N'فناوری'),
+(N'اسناد', N'اسناد و مدارک پزشکی');
 
 
 INSERT INTO Jobs (JobTitle, SectionID)
 VALUES
-('Software Engineer', 1),
-('Recruiter', 2);
+(N'کارشناس فاوا', 1),
+(N'کارشناس ترخیص', 2);
 
 INSERT INTO PhoneTypes (PhoneTypeName)
 VALUES
-('Office'),
-('Mobile'),
-('Home');
+(N'دفتر'),
+(N'موبايل'),
+(N'اتاق');
 
 
 INSERT INTO PhoneNumbers (JobID, PhoneNumber, PhoneTypeID)
 VALUES
-(1, '+1234567890', 2),
-(2, '+9876543210', 1);
+(1, '09131958575', 2),
+(2, '09131958511', 1);
 
 INSERT INTO Users (FirstName, LastName, SectionID, JobID, Email, is_admin, IsActive, password)
 VALUES
-('John', 'Doe', 1, 1, 'john.doe@example.com', 0, 1, 'securepassword123'),
-('Jane', 'Smith', 2, 2, 'jane.smith@example.com', 1, 1, 'adminpass456');
+(N'علی', N'قادری پور', 1, 1, 'john.doe@example.com', 1, 1, '1'),
+(N'رضا', N'کریمی', 2, 2, 'jane.smith@example.com', 1, 1, '2');
+
+INSERT INTO Users (FirstName, LastName, SectionID, JobID, Email, is_admin, IsActive, password)
+VALUES
+(N'محمود', N'گيشين زاده', 1, 1, 'ja2ne.smith@example.com', 1, 1, '3');

@@ -2,9 +2,13 @@
   <div class="phone-container">
     <h2>Phone Number List</h2>
 
-    <button @click="fetchPhonenumbers" class="refresh-button" :disabled="loading">
-      {{ loading ? 'Loading...' : 'Reload' }}
-    </button>
+    <div class="button-row">
+  <button @click="fetchPhonenumbers" class="refresh-button" :disabled="loading">
+    {{ loading ? 'Loading...' : 'Reload' }}
+  </button>
+  <button @click="openAddModal" class="refresh-button">Add New</button>
+</div>
+
 
     <div v-if="error" class="status error">{{ error }}</div>
 
@@ -67,6 +71,34 @@
         </form>
       </div>
     </div>
+    <!-- Add Modal -->
+<div v-if="showAddModal" class="modal">
+  <div class="modal-content">
+    <h3>Add New Phone Number</h3>
+    <form @submit.prevent="submitNewPhoneNumber">
+      <label for="add-job">Job Title:</label>
+      <select id="add-job" v-model="newForm.JobID" required>
+        <option v-for="job in jobs" :key="job.JobID" :value="job.JobID">
+          {{ job.JobTitle }}
+        </option>
+      </select>
+
+      <label for="add-phoneType">Phone Type:</label>
+      <select id="add-phoneType" v-model="newForm.PhoneTypeID">
+        <option v-for="type in phoneTypes" :key="type.phoneTypeId" :value="type.phoneTypeId">
+          {{ type.phoneTypeName }}
+        </option>
+      </select>
+
+      <label for="add-phoneNumber">Phone Number:</label>
+      <input type="text" id="add-phoneNumber" v-model="newForm.PhoneNumber" required />
+
+      <button type="submit">Add</button>
+      <button type="button" @click="closeAddModal">Cancel</button>
+    </form>
+  </div>
+</div>
+
   </div>
 </template>
 
@@ -95,6 +127,13 @@ export default {
         PhoneTypeID: null,
         PhoneNumber: "",
       },
+      showAddModal: false,
+newForm: {
+  JobID: null,
+  PhoneTypeID: null,
+  PhoneNumber: "",
+},
+
     };
   },
   created() {
@@ -181,6 +220,32 @@ export default {
         this.error = "Failed to delete phone number: " + (error.response?.data?.error || error.message);
       }
     },
+    openAddModal() {
+  this.newForm = {
+    JobID: this.jobs.length ? this.jobs[0].JobID : null,
+    PhoneTypeID: null,
+    PhoneNumber: "",
+  };
+  this.showAddModal = true;
+},
+closeAddModal() {
+  this.showAddModal = false;
+},
+async submitNewPhoneNumber() {
+  try {
+    const payload = {
+      JobID: this.newForm.JobID,
+      PhoneNumber: this.newForm.PhoneNumber,
+      PhoneTypeID: this.newForm.PhoneTypeID || null,
+    };
+    await axios.post("http://127.0.0.1:5000/api/phones/add/phonenumber", payload);
+    this.closeAddModal();
+    this.fetchPhonenumbers();
+  } catch (error) {
+    this.error = "Failed to add phone number: " + (error.response?.data?.error || error.message);
+  }
+}
+
   },
 };
 </script>
@@ -326,4 +391,11 @@ button[type="button"] {
 button[type="button"]:hover {
   background-color: #7f8c8d;
 }
+.button-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
 </style>
