@@ -1,3 +1,7 @@
+CREATE DATABASE phonebooks
+COLLATE Arabic_100_CI_AI_SC_UTF8;
+
+
 use phonebooks
 -- Table: Sections
 CREATE TABLE Sections (
