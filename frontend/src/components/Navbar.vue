@@ -2,32 +2,33 @@
   <nav class="navbar">
     <div class="nav-left">
       <router-link to="/" class="nav-link">صفحه اصلی</router-link>
-      <router-link to="/about" class="nav-link">درباره</router-link>
+
 
       <router-link to="/phonenumbers" class="nav-link"
                    v-if="authStore.isLoggedIn && authStore.isAdmin">
-        Phonenumbers
+        شماره تلفن ها
       </router-link>
 
       <router-link to="/sections" class="nav-link"
                    v-if="authStore.isLoggedIn && authStore.isAdmin">
-        Sections
+        بخش ها
       </router-link>
 
       <router-link to="/phonetypes" class="nav-link"
                    v-if="authStore.isLoggedIn && authStore.isAdmin">
-        PhoneTypes
+        نوع شماره تلفن
       </router-link>
 
       <router-link to="/users" class="nav-link"
                    v-if="authStore.isLoggedIn && authStore.isAdmin">
-        Users
+        کاربران
       </router-link>
 
       <router-link to="/jobs" class="nav-link"
                    v-if="authStore.isLoggedIn && authStore.isAdmin">
-        Jobs
+        شغل ها
       </router-link>
+       <router-link to="/about" class="nav-link">درباره</router-link>
     </div>
 
     <div class="nav-right">
