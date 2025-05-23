@@ -1,87 +1,84 @@
 <template>
-  <div class="section-container">
+  <div class="container">
     <h2>Section List</h2>
-    <div class="top-actions">
-  <button @click="fetchSections" class="refresh-button" :disabled="loading">
-    {{ loading ? 'Loading...' : 'Reload' }}
-  </button>
-  <button @click="showAddForm = !showAddForm" class="add-button">
-    {{ showAddForm ? 'Cancel' : 'Add Section' }}
-  </button>
-</div>
+    <div class="actions">
+      <button @click="fetchSections" class="btn btn-primary" :disabled="loading">
+        {{ loading ? 'Loading...' : 'Reload' }}
+      </button>
+      <button @click="showAddForm = !showAddForm" class="btn btn-success">
+        {{ showAddForm ? 'Cancel' : 'Add Section' }}
+      </button>
+    </div>
 
     <!-- Add Section Form -->
-<!-- Add Section Form -->
-<!-- Add Section Form -->
-<div class="add-section-form" v-if="showAddForm">
-  <input
-    v-model="newSection.SectionName"
-    placeholder="New Section Name"
-    class="edit-input"
-  />
-  <textarea
-    v-model="newSection.Description"
-    placeholder="Description (optional)"
-    class="edit-textarea"
-  ></textarea>
-  <button @click="addSection" :disabled="adding" class="action save">
-    {{ adding ? 'Adding...' : 'Add Section' }}
-  </button>
-</div>
-
+    <div class="add-form" v-if="showAddForm">
+      <input
+        v-model="newSection.SectionName"
+        placeholder="New Section Name"
+        class="input-field"
+      />
+      <textarea
+        v-model="newSection.Description"
+        placeholder="Description (optional)"
+        class="input-field textarea"
+      ></textarea>
+      <button @click="addSection" :disabled="adding" class="btn btn-success">
+        {{ adding ? 'Adding...' : 'Add Section' }}
+      </button>
+    </div>
 
     <div v-if="loading" class="status">Loading...</div>
-    <div v-if="error" class="status error">{{ error }}</div>
+    <div v-if="error" class="status status-error">{{ error }}</div>
 
-    <ul v-if="sections.length && !loading && !error" class="section-list">
+    <ul v-if="sections.length && !loading && !error" class="card-list">
       <li
         v-for="sec in sections"
         :key="sec.SectionID"
-        class="section-item"
+        class="card"
       >
         <!-- DISPLAY MODE -->
-        <div v-if="editingId !== sec.SectionID" class="item-content">
+        <div v-if="editingId !== sec.SectionID" class="card-content">
           <h3>{{ sec.SectionName }}</h3>
           <p>{{ sec.Description }}</p>
         </div>
 
         <!-- EDIT MODE -->
-        <div v-else class="item-content edit-mode">
+        <div v-else class="card-content">
           <input
             v-model="form.SectionName"
             placeholder="Section Name"
-            class="edit-input"
+            class="input-field"
           />
           <textarea
             v-model="form.Description"
             placeholder="Description"
-            class="edit-textarea"
+            class="input-field textarea"
           ></textarea>
         </div>
 
         <!-- ACTIONS -->
-        <div class="item-actions">
+        <div class="card-actions">
           <button
             v-if="editingId !== sec.SectionID"
             @click="startEdit(sec)"
-            class="action edit"
+            class="btn btn-warning"
           >Edit</button>
           <button
             v-else
             @click="saveEdit(sec.SectionID)"
-            class="action save"
+            class="btn btn-success"
             :disabled="saving"
           >Save</button>
           <button
             v-if="editingId === sec.SectionID"
             @click="cancelEdit"
-            class="action cancel"
+            class="btn btn-secondary"
             :disabled="saving"
           >Cancel</button>
           <button
             v-if="editingId !== sec.SectionID"
             @click="deleteSection(sec.SectionID)"
-            class="action delete"
+            class="btn btn-danger"
             :disabled="loading"
           >Delete</button>
         </div>
@@ -109,10 +106,10 @@ export default {
       },
       showAddForm: false,
       newSection: {
-  SectionName: "",
-  Description: ""
-},
-adding: false,
+        SectionName: "",
+        Description: ""
+      },
+      adding: false,
     };
   },
   created() {
@@ -135,7 +132,6 @@ adding: false,
     },
 
     startEdit(sec) {
-      // enter edit mode and populate form
       this.editingId = sec.SectionID;
       this.form.SectionName = sec.SectionName;
       this.form.Description = sec.Description || "";
@@ -179,34 +175,162 @@ adding: false,
       }
     },
     async addSection() {
-  if (!this.newSection.SectionName.trim()) {
-    alert("Section Name is required.");
-    return;
-  }
-  this.adding = true;
-  try {
-    await axios.post("http://127.0.0.1:5000/api/sections", {
-      SectionName: this.newSection.SectionName.trim(),
-      Description: this.newSection.Description.trim()
-    });
-    this.newSection.SectionName = "";
-    this.newSection.Description = "";
-    await this.fetchSections();
-  } catch (err) {
-    alert("Failed to add: " + (err.response?.data?.error || err.message));
-  } finally {
-    this.adding = false;
-  }
-}
-
+      if (!this.newSection.SectionName.trim()) {
+        alert("Section Name is required.");
+        return;
+      }
+      this.adding = true;
+      try {
+        await axios.post("http://127.0.0.1:5000/api/sections", {
+          SectionName: this.newSection.SectionName.trim(),
+          Description: this.newSection.Description.trim()
+        });
+        this.newSection.SectionName = "";
+        this.newSection.Description = "";
+        await this.fetchSections();
+      } catch (err) {
+        alert("Failed to add: " + (err.response?.data?.error || err.message));
+      } finally {
+        this.adding = false;
+      }
+    }
   }
 };
 </script>
 
 <style scoped>
-.section-container { /* unchanged */ }
+.container {
+  max-width: 800px;
+  margin: 32px auto;
+  padding: 24px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Inter', system-ui, sans-serif;
+}
 
-.section-list {
+h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  margin-bottom: 24px;
+}
+
+.input-field {
+  padding: 10px 12px;
+  font-size: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.btn {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-primary {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.btn-success {
+  background-color: #16a34a;
+  color: #ffffff;
+}
+
+.btn-warning {
+  background-color: #106fb6;
+  color: #ffffff;
+}
+
+.btn-danger {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+
+.btn-secondary {
+  background-color: #6b7280;
+  color: #ffffff;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-success:hover {
+  background-color: #15803d;
+}
+
+.btn-warning:hover {
+  background-color: #0627a2;
+}
+
+.btn-danger:hover {
+  background-color: #b91c1c;
+}
+
+.btn-secondary:hover {
+  background-color: #4b5563;
+}
+
+.btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.status {
+  text-align: center;
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+.status-error {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.card-list {
   list-style: none;
   padding: 0;
   display: flex;
@@ -214,91 +338,38 @@ adding: false,
   gap: 16px;
 }
 
-.section-item {
+.card {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   padding: 16px;
-  background-color: #f9f9f9;
-  border-left: 5px solid #3498db;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background-color: #f9fafb;
+  transition: box-shadow 0.2s;
 }
 
-.section-item:hover {
-  background-color: #f0f8ff;
+.card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.item-content {
-  flex: 1;
+.card-content h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 6px;
 }
 
-.edit-mode .edit-input,
-.edit-mode .edit-textarea {
-  width: 100%;
-  margin-bottom: 8px;
-  padding: 8px;
+.card-content p {
   font-size: 14px;
-  border: 1px solid #ccd0d5;
-  border-radius: 4px;
+  color: #4b5563;
+  margin: 0;
 }
 
-.edit-textarea {
-  resize: vertical;
-  min-height: 60px;
-}
-
-.item-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-left: 12px;
-}
-
-.item-actions .action {
-  padding: 6px 12px;
-  font-size: 13px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.item-actions .edit {
-  background-color: #f1c40f;
-  color: #fff;
-}
-
-.item-actions .save {
-  background-color: #2ecc71;
-  color: #fff;
-}
-
-.item-actions .cancel {
-  background-color: #95a5a6;
-  color: #fff;
-}
-
-.item-actions .delete {
-  background-color: #e74c3c;
-  color: #fff;
-}
-
-.action:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.refresh-button { /* unchanged */ }
-
-.add-section-form {
-  margin-top: 20px;
+.card-actions {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 12px;
-  background-color: #eef6fc;
-  border: 1px solid #d0e2f2;
-  border-radius: 8px;
+  margin-left: 12px;
 }
-
 </style>

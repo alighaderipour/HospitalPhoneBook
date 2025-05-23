@@ -1,37 +1,34 @@
 <template>
-  <div class="phone-container">
+  <div class="container">
     <h2>Phone Number List</h2>
 
-    <div class="button-row">
-  <button @click="fetchPhonenumbers" class="refresh-button" :disabled="loading">
-    {{ loading ? 'Loading...' : 'Reload' }}
-  </button>
-  <button @click="openAddModal" class="refresh-button">Add New</button>
-</div>
+    <div class="actions">
+      <button @click="fetchPhonenumbers" class="btn btn-primary" :disabled="loading">
+        {{ loading ? 'Loading...' : 'Reload' }}
+      </button>
+      <button @click="openAddModal" class="btn btn-success">Add New</button>
+    </div>
 
+    <div v-if="error" class="status status-error">{{ error }}</div>
 
-    <div v-if="error" class="status error">{{ error }}</div>
-
-    <ul v-if="!loading && !error && phonenumbers.length" class="phone-list">
+    <ul v-if="!loading && !error && phonenumbers.length" class="card-list">
       <li
         v-for="phonenumber in phonenumbers"
         :key="phonenumber.PhoneID"
-        class="phone-item"
+        class="card"
       >
-        <div class="phone-content">
-          <div class="phone-details">
-            <strong>Job ID:</strong> {{ phonenumber.JobID }} <br />
-            <strong>Job Title:</strong> {{ phonenumber.JobTitle }} <br />
-            <strong>Section:</strong> {{ phonenumber.SectionName }} <br />
-            <strong>Phone:</strong> {{ phonenumber.PhoneNumber }} <br />
-            <strong>Type:</strong> {{ phonenumber.PhoneTypeName || 'Unknown' }}
-          </div>
-
-          <EditDeleteButtons
-            @edit="openEditModal(phonenumber)"
-            @delete="handleDelete(phonenumber.PhoneID)"
-          />
+        <div class="card-content">
+          <p><strong>Job ID:</strong> {{ phonenumber.JobID }}</p>
+          <p><strong>Job Title:</strong> {{ phonenumber.JobTitle }}</p>
+          <p><strong>Section:</strong> {{ phonenumber.SectionName }}</p>
+          <p><strong>Phone:</strong> {{ phonenumber.PhoneNumber }}</p>
+          <p><strong>Mobile:</strong> {{ phonenumber.Mobile || '—' }}</p>
+          <p><strong>Type:</strong> {{ phonenumber.PhoneTypeName || 'Unknown' }}</p>
         </div>
+        <EditDeleteButtons
+          @edit="openEditModal(phonenumber)"
+          @delete="handleDelete(phonenumber.PhoneID)"
+        />
       </li>
     </ul>
 
@@ -41,64 +38,70 @@
     <div v-if="showEditModal" class="modal">
       <div class="modal-content">
         <h3>Edit Phone Number</h3>
-        <form @submit.prevent="saveEdit">
+        <form @submit.prevent="saveEdit" class="form">
           <label for="job">Job Title:</label>
-          <select id="job" v-model="editForm.JobID" required>
+          <select id="job" v-model="editForm.JobID" required class="input-field">
             <option v-for="job in jobs" :key="job.JobID" :value="job.JobID">
               {{ job.JobTitle }}
             </option>
           </select>
 
           <label for="section">Section:</label>
-          <select id="section" v-model="editForm.SectionID" required>
+          <select id="section" v-model="editForm.SectionID" required class="input-field">
             <option v-for="section in sections" :key="section.SectionID" :value="section.SectionID">
               {{ section.SectionName }}
             </option>
           </select>
 
           <label for="phoneType">Phone Type:</label>
-          <select id="phoneType" v-model="editForm.PhoneTypeID">
+          <select id="phoneType" v-model="editForm.PhoneTypeID" class="input-field">
             <option v-for="type in phoneTypes" :key="type.phoneTypeId" :value="type.phoneTypeId">
               {{ type.phoneTypeName }}
             </option>
           </select>
 
           <label for="phoneNumber">Phone Number:</label>
-          <input type="text" id="phoneNumber" v-model="editForm.PhoneNumber" required />
+          <input type="text" id="phoneNumber" v-model="editForm.PhoneNumber" required class="input-field" />
 
-          <button type="submit">Save</button>
-          <button type="button" @click="closeEditModal">Cancel</button>
+          <label for="mobile">Mobile:</label>
+          <input type="text" id="mobile" v-model="editForm.Mobile" class="input-field" />
+
+          <button type="submit" class="btn btn-success">Save</button>
+          <button type="button" @click="closeEditModal" class="btn btn-secondary">Cancel</button>
         </form>
       </div>
     </div>
+
     <!-- Add Modal -->
-<div v-if="showAddModal" class="modal">
-  <div class="modal-content">
-    <h3>Add New Phone Number</h3>
-    <form @submit.prevent="submitNewPhoneNumber">
-      <label for="add-job">Job Title:</label>
-      <select id="add-job" v-model="newForm.JobID" required>
-        <option v-for="job in jobs" :key="job.JobID" :value="job.JobID">
-          {{ job.JobTitle }}
-        </option>
-      </select>
+    <div v-if="showAddModal" class="modal">
+      <div class="modal-content">
+        <h3>Add New Phone Number</h3>
+        <form @submit.prevent="submitNewPhoneNumber" class="form">
+          <label for="add-job">Job Title:</label>
+          <select id="add-job" v-model="newForm.JobID" required class="input-field">
+            <option v-for="job in jobs" :key="job.JobID" :value="job.JobID">
+              {{ job.JobTitle }}
+            </option>
+          </select>
 
-      <label for="add-phoneType">Phone Type:</label>
-      <select id="add-phoneType" v-model="newForm.PhoneTypeID">
-        <option v-for="type in phoneTypes" :key="type.phoneTypeId" :value="type.phoneTypeId">
-          {{ type.phoneTypeName }}
-        </option>
-      </select>
+          <label for="add-phoneType">Phone Type:</label>
+          <select id="add-phoneType" v-model="newForm.PhoneTypeID" class="input-field">
+            <option v-for="type in phoneTypes" :key="type.phoneTypeId" :value="type.phoneTypeId">
+              {{ type.phoneTypeName }}
+            </option>
+          </select>
 
-      <label for="add-phoneNumber">Phone Number:</label>
-      <input type="text" id="add-phoneNumber" v-model="newForm.PhoneNumber" required />
+          <label for="add-phoneNumber">Phone Number:</label>
+          <input type="text" id="add-phoneNumber" v-model="newForm.PhoneNumber" required class="input-field" />
 
-      <button type="submit">Add</button>
-      <button type="button" @click="closeAddModal">Cancel</button>
-    </form>
-  </div>
-</div>
+          <label for="add-mobile">Mobile:</label>
+          <input type="text" id="add-mobile" v-model="newForm.Mobile" class="input-field" />
 
+          <button type="submit" class="btn btn-success">Add</button>
+          <button type="button" @click="closeAddModal" class="btn btn-secondary">Cancel</button>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -126,14 +129,15 @@ export default {
         SectionID: null,
         PhoneTypeID: null,
         PhoneNumber: "",
+        Mobile: ""
       },
       showAddModal: false,
-newForm: {
-  JobID: null,
-  PhoneTypeID: null,
-  PhoneNumber: "",
-},
-
+      newForm: {
+        JobID: null,
+        PhoneTypeID: null,
+        PhoneNumber: "",
+        Mobile: ""
+      },
     };
   },
   created() {
@@ -190,6 +194,7 @@ newForm: {
         SectionID: job ? this.sections.find((s) => s.SectionName === phone.SectionName)?.SectionID : null,
         PhoneTypeID: this.phoneTypes.find((t) => t.phoneTypeName === phone.PhoneTypeName)?.phoneTypeId || null,
         PhoneNumber: phone.PhoneNumber,
+        Mobile: phone.Mobile || ""
       };
       this.showEditModal = true;
     },
@@ -202,10 +207,11 @@ newForm: {
           JobID: this.editForm.JobID,
           PhoneNumber: this.editForm.PhoneNumber,
           PhoneTypeID: this.editForm.PhoneTypeID || null,
+          Mobile: this.editForm.Mobile
         };
         await axios.put(`http://127.0.0.1:5000/api/phones/${this.editForm.PhoneID}`, payload);
         this.closeEditModal();
-        this.fetchPhonenumbers(); // Refresh the list
+        this.fetchPhonenumbers();
       } catch (error) {
         this.error = "Failed to update phone number: " + (error.response?.data?.error || error.message);
       }
@@ -221,88 +227,121 @@ newForm: {
       }
     },
     openAddModal() {
-  this.newForm = {
-    JobID: this.jobs.length ? this.jobs[0].JobID : null,
-    PhoneTypeID: null,
-    PhoneNumber: "",
-  };
-  this.showAddModal = true;
-},
-closeAddModal() {
-  this.showAddModal = false;
-},
-async submitNewPhoneNumber() {
-  try {
-    const payload = {
-      JobID: this.newForm.JobID,
-      PhoneNumber: this.newForm.PhoneNumber,
-      PhoneTypeID: this.newForm.PhoneTypeID || null,
-    };
-    await axios.post("http://127.0.0.1:5000/api/phones/add/phonenumber", payload);
-    this.closeAddModal();
-    this.fetchPhonenumbers();
-  } catch (error) {
-    this.error = "Failed to add phone number: " + (error.response?.data?.error || error.message);
-  }
-}
-
+      this.newForm = {
+        JobID: this.jobs.length ? this.jobs[0].JobID : null,
+        PhoneTypeID: null,
+        PhoneNumber: "",
+        Mobile: ""
+      };
+      this.showAddModal = true;
+    },
+    closeAddModal() {
+      this.showAddModal = false;
+    },
+    async submitNewPhoneNumber() {
+      try {
+        const payload = {
+          JobID: this.newForm.JobID,
+          PhoneNumber: this.newForm.PhoneNumber,
+          PhoneTypeID: this.newForm.PhoneTypeID || null,
+          Mobile: this.newForm.Mobile
+        };
+        await axios.post("http://127.0.0.1:5000/api/phones/add/phonenumber", payload);
+        this.closeAddModal();
+        this.fetchPhonenumbers();
+      } catch (error) {
+        this.error = "Failed to add phone number: " + (error.response?.data?.error || error.message);
+      }
+    }
   },
 };
 </script>
 
 <style scoped>
-.phone-container {
+.container {
   max-width: 800px;
-  margin: 40px auto;
+  margin: 32px auto;
   padding: 24px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 h2 {
-  font-size: 26px;
-  color: #2c3e50;
-  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
   text-align: center;
+  margin-bottom: 24px;
 }
 
-.refresh-button {
-  display: block;
-  margin: 0 auto 20px;
-  padding: 8px 16px;
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.btn {
+  padding: 10px 16px;
   font-size: 14px;
-  background-color: #3498db;
-  color: #fff;
+  font-weight: 500;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.2s, transform 0.1s;
 }
 
-.refresh-button:hover {
-  background-color: #2980b9;
+.btn-primary {
+  background-color: #2563eb;
+  color: #ffffff;
 }
 
-.refresh-button:disabled {
-  background-color: #95a5a6;
+.btn-success {
+  background-color: #16a34a;
+  color: #ffffff;
+}
+
+.btn-secondary {
+  background-color: #6b7280;
+  color: #ffffff;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-success:hover {
+  background-color: #15803d;
+}
+
+.btn-secondary:hover {
+  background-color: #4b5563;
+}
+
+.btn:disabled {
+  background-color: #9ca3af;
   cursor: not-allowed;
 }
 
 .status {
   text-align: center;
-  font-style: italic;
-  color: #7f8c8d;
-  margin-bottom: 16px;
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 24px;
 }
 
-.status.error {
-  color: #e74c3c;
-  font-weight: bold;
+.status-error {
+  color: #dc2626;
+  font-weight: 500;
 }
 
-.phone-list {
+.card-list {
   list-style: none;
   padding: 0;
   display: flex;
@@ -310,31 +349,24 @@ h2 {
   gap: 16px;
 }
 
-.phone-item {
+.card {
   padding: 16px;
-  background-color: #f9f9f9;
-  border-left: 5px solid #3498db;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background-color: #f9fafb;
+  transition: box-shadow 0.2s;
 }
 
-.phone-item:hover {
-  background-color: #f0f8ff;
+.card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.phone-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.card-content p {
+  font-size: 14px;
+  color: #4b5563;
+  margin: 6px 0;
 }
 
-.phone-details strong {
-  min-width: 80px;
-  display: inline-block;
-  color: #2c3e50;
-}
-
-/* Modal Styles */
 .modal {
   position: fixed;
   top: 0;
@@ -348,54 +380,37 @@ h2 {
 }
 
 .modal-content {
-  background: white;
-  padding: 20px;
+  background: #ffffff;
+  padding: 24px;
   border-radius: 8px;
-  width: 400px;
+  width: 100%;
+  max-width: 400px;
 }
 
-form {
+.form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
 }
 
 label {
-  font-weight: bold;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+  margin-bottom: 4px;
 }
 
-select,
-input {
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+.input-field {
+  padding: 10px 12px;
+  font-size: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-button {
-  padding: 8px 16px;
-  background-color: #3498db;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+.input-field:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
-
-button:hover {
-  background-color: #2980b9;
-}
-
-button[type="button"] {
-  background-color: #95a5a6;
-}
-
-button[type="button"]:hover {
-  background-color: #7f8c8d;
-}
-.button-row {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
 </style>

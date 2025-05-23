@@ -1,8 +1,8 @@
 <template>
-  <div class="login-container">
-    <div class="login-card">
+  <div class="container">
+    <div class="card">
       <h2 class="login-title">Login</h2>
-      <form @submit.prevent="handleLogin" class="login-form">
+      <form @submit.prevent="handleLogin" class="form">
         <input
           v-model="userID"
           type="text"
@@ -20,13 +20,13 @@
         <button
           type="submit"
           :disabled="loading"
-          class="login-button"
+          class="btn btn-primary"
           :class="{ 'loading': loading }"
         >
           {{ loading ? 'Logging in...' : 'Login' }}
           <span class="button-loader" v-if="loading"></span>
         </button>
-        <p class="error-message" v-if="error">{{ error }}</p>
+        <p class="status status-error" v-if="error">{{ error }}</p>
       </form>
     </div>
   </div>
@@ -75,94 +75,93 @@ export default {
 </script>
 
 <style scoped>
-.login-container {
+.container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 20px;
+  background: #f9fafb;
+  padding: 16px;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
-.login-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  padding: 40px;
+.card {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
   width: 100%;
   max-width: 400px;
-  transition: transform 0.3s ease;
-}
-
-.login-card:hover {
-  transform: translateY(-5px);
 }
 
 .login-title {
-  color: #2c3e50;
-  text-align: center;
-  margin-bottom: 30px;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 600;
+  color: #1f2937;
+  text-align: center;
+  margin-bottom: 24px;
 }
 
-.login-form {
+.form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .input-field {
-  padding: 15px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  padding: 10px 12px;
   font-size: 16px;
-  transition: all 0.3s ease;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .input-field:focus {
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
   outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-.login-button {
-  background-color: #3498db;
-  color: white;
+.btn {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
   border: none;
-  padding: 15px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.2s, transform 0.1s;
   position: relative;
 }
 
-.login-button:hover:not(:disabled) {
-  background-color: #2980b9;
-  transform: translateY(-2px);
+.btn-primary {
+  background-color: #2563eb;
+  color: #ffffff;
 }
 
-.login-button:disabled {
-  background-color: #bdc3c7;
+.btn-primary:hover:not(:disabled) {
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  background-color: #9ca3af;
   cursor: not-allowed;
 }
 
-.login-button.loading {
+.btn-primary.loading {
   padding-right: 40px;
 }
 
 .button-loader {
   position: absolute;
-  right: 15px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
-  border-top-color: white;
+  border-top-color: #ffffff;
   animation: spin 1s ease-in-out infinite;
 }
 
@@ -170,17 +169,10 @@ export default {
   to { transform: translateY(-50%) rotate(360deg); }
 }
 
-.error-message {
-  color: #e74c3c;
-  text-align: center;
-  margin-top: 10px;
+.status-error {
   font-size: 14px;
-  animation: shake 0.5s ease-in-out;
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-5px); }
-  40%, 80% { transform: translateX(5px); }
+  color: #dc2626;
+  text-align: center;
+  margin-top: 12px;
 }
 </style>

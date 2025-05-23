@@ -1,34 +1,34 @@
 <template>
-  <div class="jobs-container">
+  <div class="container">
     <h2>Job List</h2>
-    <div class="header-buttons">
-      <button @click="fetchJobs" class="refresh-button" :disabled="loading">
+    <div class="actions">
+      <button @click="fetchJobs" class="btn btn-primary" :disabled="loading">
         {{ loading ? 'Loading...' : 'Reload' }}
       </button>
-      <button @click="showAddForm = !showAddForm" class="add-button">
+      <button @click="showAddForm = !showAddForm" class="btn btn-success">
         {{ showAddForm ? 'Cancel Add' : 'Add New' }}
       </button>
     </div>
 
     <div v-if="loading" class="status">Loading...</div>
-    <div v-if="error" class="status error">{{ error }}</div>
+    <div v-if="error" class="status status-error">{{ error }}</div>
 
-    <ul v-if="jobs.length && !loading && !error" class="job-list">
-      <li v-for="job in jobs" :key="job.JobID" class="job-item">
+    <ul v-if="jobs.length && !loading && !error" class="card-list">
+      <li v-for="job in jobs" :key="job.JobID" class="card">
         <!-- DISPLAY MODE -->
-        <div v-if="editingId !== job.JobID" class="item-content">
+        <div v-if="editingId !== job.JobID" class="card-content">
           <h3>{{ job.JobTitle }}</h3>
           <p><strong>Section:</strong> {{ getSectionName(job.SectionID) }}</p>
         </div>
 
         <!-- EDIT MODE -->
-        <div v-else class="item-content edit-mode">
+        <div v-else class="card-content">
           <input
             v-model="form.JobTitle"
             placeholder="Job Title"
-            class="edit-input"
+            class="input-field"
           />
-          <select v-model="form.SectionID" class="edit-select">
+          <select v-model="form.SectionID" class="input-field">
             <option disabled value="">-- select section --</option>
             <option
               v-for="sec in sectionsList"
@@ -41,28 +41,28 @@
         </div>
 
         <!-- ACTIONS -->
-        <div class="item-actions">
+        <div class="card-actions">
           <button
             v-if="editingId !== job.JobID"
             @click="startEdit(job)"
-            class="action edit"
+            class="btn btn-warning"
           >Edit</button>
           <button
             v-else
             @click="saveEdit(job.JobID)"
-            class="action save"
+            class="btn btn-success"
             :disabled="saving"
           >Save</button>
           <button
             v-if="editingId === job.JobID"
             @click="cancelEdit"
-            class="action cancel"
+            class="btn btn-secondary"
             :disabled="saving"
           >Cancel</button>
           <button
             v-if="editingId !== job.JobID"
             @click="deleteJob(job.JobID)"
-            class="action delete"
+            class="btn btn-danger"
             :disabled="loading"
           >Delete</button>
         </div>
@@ -73,8 +73,8 @@
 
     <!-- Add Form -->
     <div v-if="showAddForm" class="add-form">
-      <input v-model="newJob.JobTitle" placeholder="Job Title" class="edit-input" />
-      <select v-model="newJob.SectionID" class="edit-select">
+      <input v-model="newJob.JobTitle" placeholder="Job Title" class="input-field" />
+      <select v-model="newJob.SectionID" class="input-field">
         <option disabled value="">-- select section --</option>
         <option
           v-for="sec in sectionsList"
@@ -84,7 +84,7 @@
           {{ sec.SectionName }}
         </option>
       </select>
-      <button @click="createJob" :disabled="saving" class="action save">
+      <button @click="createJob" :disabled="saving" class="btn btn-success">
         {{ saving ? 'Saving...' : 'Submit' }}
       </button>
     </div>
@@ -211,38 +211,133 @@ export default {
 </script>
 
 <style scoped>
-.jobs-container {
-  max-width: 700px;
-  margin: 40px auto;
+.container {
+  max-width: 800px;
+  margin: 32px auto;
   padding: 24px;
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
   text-align: center;
-  color: #2c3e50;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
-.refresh-button {
-  display: block;
-  margin: 0 auto 20px;
-  padding: 8px 16px;
-  background: #3498db;
-  color: #fff;
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  margin-bottom: 24px;
+}
+
+.input-field {
+  padding: 10px 12px;
+  font-size: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.btn {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
 }
-.refresh-button:disabled { background: #95a5a6; }
 
-.status { text-align: center; font-style: italic; color: #7f8c8d; }
-.status.error { color: #e74c3c; font-weight: bold; }
+.btn-primary {
+  background-color: #2563eb;
+  color: #ffffff;
+}
 
-.job-list {
+.btn-success {
+  background-color: #16a34a;
+  color: #ffffff;
+}
+
+.btn-warning {
+  background-color: #1d4ed8;
+  color: #ffffff;
+}
+
+.btn-danger {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+
+.btn-secondary {
+  background-color: #6b7280;
+  color: #ffffff;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-success:hover {
+  background-color: #15803d;
+}
+
+.btn-warning:hover {
+  background-color: #0627a2;
+}
+
+.btn-danger:hover {
+  background-color: #b91c1c;
+}
+
+.btn-secondary:hover {
+  background-color: #4b5563;
+}
+
+.btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.status {
+  text-align: center;
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+.status-error {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.card-list {
   list-style: none;
   padding: 0;
   display: flex;
@@ -250,74 +345,38 @@ h2 {
   gap: 16px;
 }
 
-.job-item {
+.card {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   padding: 16px;
-  background: #f9f9f9;
-  border-left: 5px solid #3498db;
-  border-radius: 8px;
-  transition: background 0.3s;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background-color: #f9fafb;
+  transition: box-shadow 0.2s;
 }
-.job-item:hover { background: #f0f8ff; }
 
-.item-content { flex: 1; }
+.card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
 
-.edit-input,
-.edit-select {
-  width: 100%;
-  margin-bottom: 12px;
-  padding: 8px;
+.card-content h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 6px;
+}
+
+.card-content p {
   font-size: 14px;
-  border: 1px solid #ccd0d5;
-  border-radius: 4px;
+  color: #4b5563;
+  margin: 0;
 }
 
-.item-actions {
+.card-actions {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   margin-left: 12px;
-}
-
-.action {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
-  color: #fff;
-}
-.action.edit { background: #f1c40f; }
-.action.save { background: #2ecc71; }
-.action.cancel { background: #95a5a6; }
-.action.delete { background: #e74c3c; }
-.action:disabled { opacity: 0.6; cursor: not-allowed; }
-
-.header-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.add-button {
-  padding: 8px 16px;
-  background: #27ae60;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-.add-button:hover {
-  background: #229954;
-}
-
-.add-form {
-  margin-bottom: 24px;
-  background: #f0f8ff;
-  padding: 16px;
-  border-radius: 8px;
 }
 </style>

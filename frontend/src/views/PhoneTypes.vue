@@ -1,9 +1,9 @@
 <template>
-  <div class="phonetype-container">
+  <div class="container">
     <h2>Phone Type List</h2>
 
     <div class="actions">
-      <button @click="fetchPhoneTypes" class="refresh-button" :disabled="loading">
+      <button @click="fetchPhoneTypes" class="btn btn-primary" :disabled="loading">
         {{ loading ? 'Loading...' : 'Reload' }}
       </button>
     </div>
@@ -14,28 +14,28 @@
         v-model="newPhoneTypeName"
         type="text"
         placeholder="Enter new phone type name"
-        class="add-input"
+        class="input-field"
       />
-      <button @click="addNewPhoneType" class="add-button" :disabled="loading || !newPhoneTypeName.trim()">
+      <button @click="addNewPhoneType" class="btn btn-success" :disabled="loading || !newPhoneTypeName.trim()">
         Add New
       </button>
     </div>
 
-    <div v-if="error" class="status error">{{ error }}</div>
+    <div v-if="error" class="status status-error">{{ error }}</div>
 
-    <ul v-if="!loading && !error && phoneTypes.length" class="phonetype-list">
+    <ul v-if="!loading && !error && phoneTypes.length" class="card-list">
       <li
         v-for="pt in phoneTypes"
         :key="pt.phoneTypeId"
-        class="phonetype-item"
+        class="card"
       >
-        <div class="item-content">
+        <div class="card-content">
           <h3>{{ pt.phoneTypeId }}</h3>
           <p>{{ pt.phoneTypeName }}</p>
         </div>
-        <div class="item-actions">
-          <button @click="editPhoneType(pt)" class="action edit">Edit</button>
-          <button @click="deletePhoneType(pt.phoneTypeId)" class="action delete">Delete</button>
+        <div class="card-actions">
+          <button @click="editPhoneType(pt)" class="btn btn-warning">Edit</button>
+          <button @click="deletePhoneType(pt.phoneTypeId)" class="btn btn-danger">Delete</button>
         </div>
       </li>
     </ul>
@@ -43,7 +43,6 @@
     <p v-else-if="!loading && !error" class="status">No phone types found.</p>
   </div>
 </template>
-
 
 <script>
 import axios from "axios";
@@ -128,11 +127,121 @@ export default {
 };
 </script>
 
-
 <style scoped>
-.phonetype-container { /* unchanged */ }
+.container {
+  max-width: 800px;
+  margin: 32px auto;
+  padding: 24px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Inter', system-ui, sans-serif;
+}
 
-.phonetype-list {
+h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.add-section {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.input-field {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.btn {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-primary {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.btn-success {
+  background-color: #16a34a;
+  color: #ffffff;
+}
+
+.btn-warning {
+  background-color: #1d4ed8;
+  color: #ffffff;
+}
+
+.btn-danger {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-success:hover {
+  background-color: #15803d;
+}
+
+.btn-warning:hover {
+  background-color: #0627a2;
+}
+
+.btn-danger:hover {
+  background-color: #b91c1c;
+}
+
+.btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.status {
+  text-align: center;
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+.status-error {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.card-list {
   list-style: none;
   padding: 0;
   display: flex;
@@ -140,103 +249,36 @@ export default {
   gap: 16px;
 }
 
-.phonetype-item {
+.card {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 16px;
-  background-color: #f9f9f9;
-  border-left: 5px solid #3498db;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background-color: #f9fafb;
+  transition: box-shadow 0.2s;
 }
 
-.phonetype-item:hover {
-  background-color: #f0f8ff;
+.card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.item-content h3,
-.item-content p { margin: 0; }
+.card-content h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 6px;
+}
 
-.item-actions .action {
-  margin-left: 8px;
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+.card-content p {
   font-size: 14px;
+  color: #4b5563;
+  margin: 0;
 }
 
-.item-actions .edit {
-  background-color: #f1c40f;
-  color: #fff;
-}
-
-.item-actions .edit:hover {
-  background-color: #d4ac0d;
-}
-
-.item-actions .delete {
-  background-color: #e74c3c;
-  color: #fff;
-}
-
-.item-actions .delete:hover {
-  background-color: #c0392b;
-}
-
-.actions {
+.card-actions {
   display: flex;
-  gap: 10px;
-  margin-bottom: 1rem;
+  gap: 8px;
 }
-
-.add-button {
-  background-color: #2ecc71;
-  color: #fff;
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.add-button:hover {
-  background-color: #27ae60;
-}
-.actions {
-  margin-bottom: 1rem;
-}
-
-.add-section {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 1rem;
-}
-
-.add-input {
-  flex: 1;
-  padding: 6px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.add-button {
-  background-color: #2ecc71;
-  color: #fff;
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.add-button:disabled {
-  background-color: #bdc3c7;
-  cursor: not-allowed;
-}
-
-.add-button:hover:enabled {
-  background-color: #27ae60;
-}
-
-/* rest of your styles… */
 </style>
