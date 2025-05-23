@@ -1,19 +1,19 @@
 <template>
-  <div class="container">
+  <div class="container" dir="rtl">
     <div class="card">
-      <h2 class="login-title">Login</h2>
+      <h2 class="login-title">ورود</h2>
       <form @submit.prevent="handleLogin" class="form">
         <input
           v-model="userID"
           type="text"
-          placeholder="User ID"
+          placeholder="نام کاربری"
           required
           class="input-field"
         />
         <input
           v-model="password"
           type="password"
-          placeholder="Password"
+          placeholder="رمز عبور"
           required
           class="input-field"
         />
@@ -23,7 +23,7 @@
           class="btn btn-primary"
           :class="{ 'loading': loading }"
         >
-          {{ loading ? 'Logging in...' : 'Login' }}
+          {{ loading ? 'در حال ورود...' : 'ورود' }}
           <span class="button-loader" v-if="loading"></span>
         </button>
         <p class="status status-error" v-if="error">{{ error }}</p>
@@ -31,6 +31,7 @@
     </div>
   </div>
 </template>
+
 
 <script>
 import axios from 'axios';
@@ -175,4 +176,9 @@ export default {
   text-align: center;
   margin-top: 12px;
 }
+.input-field {
+  direction: rtl;
+  text-align: right;
+}
+
 </style>

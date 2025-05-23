@@ -606,14 +606,14 @@ def login():
         user = Users.query.filter_by(UserID=data['UserID']).first()
 
         if not user:
-            return jsonify({"error": "Invalid UserID or password"}), 401
+            return jsonify({"error": "نام کاربری یا رمز عبور اشتباه است"}), 401
 
         # Check password (assuming plaintext for now)
         if str(user.password) != str(data['password']):
-            return jsonify({"error": "Invalid UserID or password"}), 401
+            return jsonify({"error": "نام کاربری یا رمز عبور اشتباه است"}), 401
 
         if not user.IsActive:
-            return jsonify({"error": "User account is inactive"}), 403
+            return jsonify({"error": "نام کاربری غیرفعال است"}), 403
 
         # Successful login response
         return jsonify({

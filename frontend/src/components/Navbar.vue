@@ -31,10 +31,10 @@
 
     <div class="nav-right">
       <router-link to="/login" class="nav-link" v-if="!authStore.isLoggedIn">
-        Login
+        ورود
       </router-link>
       <button v-if="authStore.isLoggedIn" @click="logout" class="logout-button">
-        Logout
+        خروج
       </button>
     </div>
   </nav>

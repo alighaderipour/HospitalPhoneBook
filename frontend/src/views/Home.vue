@@ -101,8 +101,8 @@ export default {
 </script>
 
 <style scoped>
-@import url('https://cdn.jsdelivr.net/npm/vazirmatn@33.0.3/Vazirmatn-font-face.css');
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css');
+@import url('@/assets/fonts/vazirmatn/css/vazirmatn.css');
+@import url('@/assets/fonts/fontawesome/css/all.min.css');
 
 .container {
   max-width: 800px;
