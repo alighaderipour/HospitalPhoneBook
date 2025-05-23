@@ -6,6 +6,7 @@ import Section from "../views/Sections.vue";
 import PhoneTypes from "../views/PhoneTypes.vue";
 import Users from "../views/Users.vue";
 import Jobs from "../views/Jobs.vue";
+import About from "../views/About.vue";
 import { useAuthStore } from "@/store/auth";
 
 const routes = [
@@ -51,6 +52,7 @@ const routes = [
     name: "not-found",
     component: () => import("../views/NotFound.vue"), // Create this file optionally
   },
+     { path: "/about", name: "About", component: About }
 ];
 
 const router = createRouter({

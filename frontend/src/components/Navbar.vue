@@ -2,6 +2,7 @@
   <nav class="navbar">
     <div class="nav-left">
       <router-link to="/" class="nav-link">صفحه اصلی</router-link>
+      <router-link to="/about" class="nav-link">درباره</router-link>
 
       <router-link to="/phonenumbers" class="nav-link"
                    v-if="authStore.isLoggedIn && authStore.isAdmin">
