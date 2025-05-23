@@ -34,7 +34,10 @@
           <strong>Job Title:</strong>
           {{ user.JobTitle || "—" }}
         </p>
-
+        <p>
+          <strong>Mobile:</strong>
+          {{ user.Mobile || "—" }} <!-- Added Mobile field -->
+        </p>
         <div>
           <strong>Phone Numbers:</strong>
           <ul v-if="user.PhoneNumbers.length">

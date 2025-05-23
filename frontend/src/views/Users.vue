@@ -17,7 +17,7 @@
       <h3>Add New User</h3>
       <input v-model="form.FirstName" placeholder="First Name" />
       <input v-model="form.LastName" placeholder="Last Name" />
-      <input v-model="form.Email" placeholder="Email" />
+      <input v-model="form.Mobile" placeholder="Mobile" />
 
       <select v-model="form.SectionID">
         <option disabled value="">-- select section --</option>
@@ -45,7 +45,7 @@
       <thead>
         <tr>
           <th>Name</th>
-          <th>Email</th>
+          <th>Mobile</th>
           <th>Section</th>
           <th>Job</th>
           <th>Admin</th>
@@ -57,7 +57,7 @@
         <tr v-for="usr in users" :key="usr.UserID">
           <template v-if="editingId === usr.UserID">
             <td><input v-model="form.FirstName" /></td>
-            <td><input v-model="form.Email" /></td>
+            <td><input v-model="form.Mobile" /></td>
             <td>
               <select v-model="form.SectionID">
                 <option disabled value="">--</option>
@@ -83,7 +83,7 @@
           </template>
           <template v-else>
             <td>{{ usr.FirstName }} {{ usr.LastName }}</td>
-            <td>{{ usr.Email }}</td>
+            <td>{{ usr.Mobile }}</td>
             <td>{{ usr.SectionName }}</td>
             <td>{{ usr.JobTitle }}</td>
             <td>{{ usr.is_admin ? 'Yes' : 'No' }}</td>
@@ -111,7 +111,7 @@ export default {
       form: {
         FirstName: '',
         LastName: '',
-        Email: '',
+        Mobile: '',
         SectionID: '',
         JobID: '',
         is_admin: false,
@@ -146,7 +146,7 @@ export default {
       this.jobsList = data;
     },
     async addUser() {
-      if (!this.form.FirstName || !this.form.LastName || !this.form.Email || !this.form.SectionID || !this.form.JobID) {
+      if (!this.form.FirstName || !this.form.LastName || !this.form.Mobile || !this.form.SectionID || !this.form.JobID) {
         alert('All fields are required');
         return;
       }
@@ -195,7 +195,7 @@ export default {
       this.form = {
         FirstName: '',
         LastName: '',
-        Email: '',
+        Mobile: '',
         SectionID: '',
         JobID: '',
         is_admin: false,

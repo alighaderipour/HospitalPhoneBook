@@ -41,7 +41,7 @@ CREATE TABLE Users (
     LastName NVARCHAR(50) COLLATE Arabic_100_CI_AI_SC_UTF8 NOT NULL,
     SectionID INT NOT NULL,
     JobID INT NOT NULL,
-    Email NVARCHAR(100) UNIQUE,
+    Mobile NVARCHAR(11) UNIQUE,
     is_admin BIT NOT NULL DEFAULT 0,
     IsActive BIT NOT NULL DEFAULT 1,
     password NVARCHAR(255) ,
@@ -71,14 +71,9 @@ VALUES
 
 INSERT INTO PhoneNumbers (JobID, PhoneNumber, PhoneTypeID)
 VALUES
-(1, '09131958575', 2),
-(2, '09131958511', 1);
+(1, '33452', 2),
+(2, '33567', 1);
 
-INSERT INTO Users (FirstName, LastName, SectionID, JobID, Email, is_admin, IsActive, password)
+INSERT INTO Users (FirstName, LastName, SectionID, JobID, Mobile, is_admin, IsActive, password)
 VALUES
-(N'علی', N'قادری پور', 1, 1, 'john.doe@example.com', 1, 1, '1'),
-(N'رضا', N'کریمی', 2, 2, 'jane.smith@example.com', 1, 1, '2');
-
-INSERT INTO Users (FirstName, LastName, SectionID, JobID, Email, is_admin, IsActive, password)
-VALUES
-(N'محمود', N'گيشين زاده', 1, 1, 'ja2ne.smith@example.com', 1, 1, '3');
+(N'علی', N'قادری پور', 1, 1, '09131958575', 1, 1, '1')

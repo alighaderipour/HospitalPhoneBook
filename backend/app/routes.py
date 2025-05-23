@@ -363,7 +363,7 @@ def get_users():
             "UserID": user.UserID,
             "FirstName": user.FirstName,
             "LastName": user.LastName,
-            "Email": user.Email,
+            "Mobile": user.Mobile,
             "SectionID": user.SectionID,
             "SectionName": user.section.SectionName if user.section else None,
             "JobID": user.JobID,
@@ -385,7 +385,7 @@ def get_user(user_id):
             "UserID": user.UserID,
             "FirstName": user.FirstName,
             "LastName": user.LastName,
-            "Email": user.Email,
+            "Mobile": user.Mobile,
             "is_admin": user.is_admin,
             "IsActive": user.IsActive
         })
@@ -396,7 +396,7 @@ def get_user(user_id):
 @api_blueprint.route('/api/users', methods=['POST'])
 def add_user():
     data = request.get_json()
-    required_fields = ['FirstName', 'LastName', 'SectionID', 'JobID', 'Email']
+    required_fields = ['FirstName', 'LastName', 'SectionID', 'JobID', 'Mobile']
     if not all(key in data for key in required_fields):
         return jsonify({"error": f"Missing required fields: {', '.join(required_fields)}"}), 400
 
@@ -412,7 +412,7 @@ def add_user():
             LastName=data['LastName'],
             SectionID=data['SectionID'],
             JobID=data['JobID'],
-            Email=data['Email'],
+            Mobile=data['Mobile'],
             is_admin=data.get('is_admin', False),
             IsActive=data.get('IsActive', True)
         )
@@ -424,7 +424,7 @@ def add_user():
         }), 201
     except IntegrityError:
         db.session.rollback()
-        return jsonify({"error": "Email must be unique"}), 400
+        return jsonify({"error": "Mobile must be unique"}), 400
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
@@ -442,8 +442,8 @@ def update_user(user_id):
             user.FirstName = data['FirstName']
         if 'LastName' in data:
             user.LastName = data['LastName']
-        if 'Email' in data:
-            user.Email = data['Email']
+        if 'Mobile' in data:
+            user.Mobile = data['Mobile']
         if 'is_admin' in data:
             user.is_admin = data['is_admin']
         if 'IsActive' in data:
@@ -466,7 +466,7 @@ def update_user(user_id):
         })
     except IntegrityError:
         db.session.rollback()
-        return jsonify({"error": "Email must be unique"}), 400
+        return jsonify({"error": "Mobile must be unique"}), 400
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
@@ -620,7 +620,7 @@ def login():
             "UserID": user.UserID,
             "FirstName": user.FirstName,
             "LastName": user.LastName,
-            "Email": user.Email,
+            "Mobile": user.Mobile,
             "is_admin": int(user.is_admin),
             "message": "Login successful"
         }), 200
@@ -630,6 +630,7 @@ def login():
 
 
 # ==================================== SEARCH==============
+
 
 
 @api_blueprint.route('/search', methods=['GET'])
@@ -651,7 +652,7 @@ def search():
                     Users.LastName.ilike(f'%{query}%'),
                     Sections.SectionName.ilike(f'%{query}%'),
                     Jobs.JobTitle.ilike(f'%{query}%'),
-                    PhoneNumbers.PhoneNumber.ilike(f'%{query}%')  # 🔥 This line is the fix
+                    PhoneNumbers.PhoneNumber.ilike(f'%{query}%')
                 )
             )
             .all()
@@ -673,6 +674,7 @@ def search():
                 "LastName": user.LastName,
                 "SectionName": user.section.SectionName,
                 "JobTitle": user.job.JobTitle,
+                "Mobile": user.Mobile,  # Added Mobile field from Users table
                 "PhoneNumbers": phone_numbers
             })
 

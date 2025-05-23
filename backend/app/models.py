@@ -38,7 +38,7 @@ class Users(db.Model):
     LastName = db.Column(db.String(50), nullable=False)
     SectionID = db.Column(db.Integer, db.ForeignKey('Sections.SectionID'), nullable=False)
     JobID = db.Column(db.Integer, db.ForeignKey('Jobs.JobID'), nullable=False)
-    Email = db.Column(db.String(100))
+    Mobile = db.Column(db.String(11))
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
     IsActive = db.Column(db.Boolean, nullable=False, default=True)
     password = db.Column(db.String(255))
