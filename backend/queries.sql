@@ -41,7 +41,7 @@ CREATE TABLE Users (
     LastName NVARCHAR(50) COLLATE Arabic_100_CI_AI_SC_UTF8 NOT NULL,
     SectionID INT NOT NULL,
     JobID INT NOT NULL,
-    Mobile NVARCHAR(11) UNIQUE,
+    Mobile NVARCHAR(11),
     is_admin BIT NOT NULL DEFAULT 0,
     IsActive BIT NOT NULL DEFAULT 1,
     password NVARCHAR(255) ,
@@ -65,9 +65,7 @@ VALUES
 INSERT INTO PhoneTypes (PhoneTypeName)
 VALUES
 (N'دفتر'),
-(N'موبايل'),
-(N'اتاق');
-
+(N'موبايل')
 
 INSERT INTO PhoneNumbers (JobID, PhoneNumber, PhoneTypeID)
 VALUES
