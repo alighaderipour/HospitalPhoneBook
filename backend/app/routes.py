@@ -633,13 +633,24 @@ def login():
 
 
 
+from sqlalchemy import or_, func
+
 @api_blueprint.route('/search', methods=['GET'])
 def search():
-    query = request.args.get('q', '')
+    import re
+    query = request.args.get('q', '').strip()
+
     if not query:
         return jsonify([])
 
+    # Normalize query: convert tabs/multiple spaces to a single space
+    query = re.sub(r'\s+', ' ', query)
+
     try:
+        # Concatenated name expressions
+        full_name_1 = func.concat(Users.FirstName, ' ', Users.LastName)
+        full_name_2 = func.concat(Users.LastName, ' ', Users.FirstName)
+
         users = (
             Users.query
             .join(Sections, Users.SectionID == Sections.SectionID)
@@ -650,9 +661,12 @@ def search():
                 or_(
                     Users.FirstName.ilike(f'%{query}%'),
                     Users.LastName.ilike(f'%{query}%'),
+                    full_name_1.ilike(f'%{query}%'),
+                    full_name_2.ilike(f'%{query}%'),
                     Sections.SectionName.ilike(f'%{query}%'),
                     Jobs.JobTitle.ilike(f'%{query}%'),
-                    PhoneNumbers.PhoneNumber.ilike(f'%{query}%')
+                    PhoneNumbers.PhoneNumber.ilike(f'%{query}%'),
+                    Users.Mobile.ilike(f'%{query}%')
                 )
             )
             .all()
@@ -674,10 +688,13 @@ def search():
                 "LastName": user.LastName,
                 "SectionName": user.section.SectionName,
                 "JobTitle": user.job.JobTitle,
-                "Mobile": user.Mobile,  # Added Mobile field from Users table
+                "Mobile": user.Mobile,
                 "PhoneNumbers": phone_numbers
             })
 
         return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+

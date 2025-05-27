@@ -40,7 +40,8 @@
     <table class="table">
       <thead>
         <tr>
-          <th>Name</th>
+          <th>First Name</th>
+          <th>Last Name</th>
           <th>Mobile</th>
           <th>Section</th>
           <th>Job</th>
@@ -53,6 +54,7 @@
         <tr v-for="usr in users" :key="usr.UserID">
           <template v-if="editingId === usr.UserID">
             <td><input v-model="form.FirstName" class="input-field" /></td>
+            <td><input v-model="form.LastName" class="input-field" /></td>
             <td><input v-model="form.Mobile" class="input-field" /></td>
             <td>
               <select v-model="form.SectionID" class="input-field">
@@ -78,7 +80,8 @@
             </td>
           </template>
           <template v-else>
-            <td>{{ usr.FirstName }} {{ usr.LastName }}</td>
+            <td>{{ usr.FirstName }}</td>
+            <td>{{ usr.LastName }}</td>
             <td>{{ usr.Mobile }}</td>
             <td>{{ usr.SectionName }}</td>
             <td>{{ usr.JobTitle }}</td>
@@ -127,18 +130,18 @@ export default {
     async fetchUsers() {
       this.loading = true;
       try {
-        const { data } = await axios.get('http://127.0.0.1:5000/api/users');
+        const { data } = await axios.get('http://192.168.8.202:5000/api/users');
         this.users = data;
       } finally {
         this.loading = false;
       }
     },
     async fetchSectionsList() {
-      const { data } = await axios.get('http://127.0.0.1:5000/api/sections');
+      const { data } = await axios.get('http://192.168.8.202:5000/api/sections');
       this.sectionsList = data;
     },
     async fetchJobsList() {
-      const { data } = await axios.get('http://127.0.0.1:5000/api/jobs');
+      const { data } = await axios.get('http://192.168.8.202:5000/api/jobs');
       this.jobsList = data;
     },
     async addUser() {
@@ -148,7 +151,7 @@ export default {
       }
       this.saving = true;
       try {
-        await axios.post('http://127.0.0.1:5000/api/users', this.form);
+        await axios.post('http://192.168.8.202:5000/api/users', this.form);
         this.resetForm();
         this.showAddForm = false;
         this.fetchUsers();
@@ -173,7 +176,7 @@ export default {
     async saveEdit(id) {
       this.saving = true;
       try {
-        await axios.put(`http://127.0.0.1:5000/api/users/${id}`, this.form);
+        await axios.put(`http://192.168.8.202:5000/api/users/${id}`, this.form);
         this.cancelEdit();
         this.fetchUsers();
       } catch (err) {
@@ -184,7 +187,7 @@ export default {
     },
     async deleteUser(id) {
       if (!confirm('Delete user?')) return;
-      await axios.delete(`http://127.0.0.1:5000/api/users/${id}`);
+      await axios.delete(`http://192.168.8.202:5000/api/users/${id}`);
       this.fetchUsers();
     },
     resetForm() {

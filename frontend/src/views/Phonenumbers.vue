@@ -151,7 +151,7 @@ export default {
       this.loading = true;
       this.error = "";
       try {
-        const response = await axios.get("http://127.0.0.1:5000/api/phones/phonenumbers");
+        const response = await axios.get("http://192.168.8.202:5000/api/phones/phonenumbers");
         this.phonenumbers = response.data;
       } catch (error) {
         this.error = "Failed to load phone numbers: " + (error.response?.data?.error || error.message);
@@ -161,7 +161,7 @@ export default {
     },
     async fetchJobs() {
       try {
-        const response = await axios.get("http://127.0.0.1:5000/api/jobs");
+        const response = await axios.get("http://192.168.8.202:5000/api/jobs");
         this.jobs = response.data;
       } catch (error) {
         this.error = "Failed to load jobs.";
@@ -169,7 +169,7 @@ export default {
     },
     async fetchSections() {
       try {
-        const response = await axios.get("http://127.0.0.1:5000/api/sections");
+        const response = await axios.get("http://192.168.8.202:5000/api/sections");
         this.sections = response.data;
       } catch (error) {
         this.error = "Failed to load sections.";
@@ -177,7 +177,7 @@ export default {
     },
     async fetchPhoneTypes() {
       try {
-        const response = await axios.get("http://127.0.0.1:5000/api/phonetypes");
+        const response = await axios.get("http://192.168.8.202:5000/api/phonetypes");
         this.phoneTypes = response.data.map((type) => ({
           phoneTypeId: type.phoneTypeId,
           phoneTypeName: type.phoneTypeName,
@@ -209,7 +209,7 @@ export default {
           PhoneTypeID: this.editForm.PhoneTypeID || null,
           Mobile: this.editForm.Mobile
         };
-        await axios.put(`http://127.0.0.1:5000/api/phones/${this.editForm.PhoneID}`, payload);
+        await axios.put(`http://192.168.80.202:5000/api/phones/${this.editForm.PhoneID}`, payload);
         this.closeEditModal();
         this.fetchPhonenumbers();
       } catch (error) {
@@ -220,7 +220,7 @@ export default {
       if (!confirm("Are you sure you want to delete this phone number?")) return;
 
       try {
-        await axios.delete(`http://127.0.0.1:5000/api/phones/${phoneId}`);
+        await axios.delete(`http://192.168.80.202:5000/api/phones/${phoneId}`);
         this.phonenumbers = this.phonenumbers.filter((p) => p.PhoneID !== phoneId);
       } catch (error) {
         this.error = "Failed to delete phone number: " + (error.response?.data?.error || error.message);
@@ -246,7 +246,7 @@ export default {
           PhoneTypeID: this.newForm.PhoneTypeID || null,
           Mobile: this.newForm.Mobile
         };
-        await axios.post("http://127.0.0.1:5000/api/phones/add/phonenumber", payload);
+        await axios.post("http://192.168.80.202:5000/api/phones/add/phonenumber", payload);
         this.closeAddModal();
         this.fetchPhonenumbers();
       } catch (error) {

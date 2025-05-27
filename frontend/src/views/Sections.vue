@@ -121,7 +121,7 @@ export default {
       this.error = "";
       this.editingId = null;
       try {
-        const { data } = await axios.get("http://127.0.0.1:5000/api/sections");
+        const { data } = await axios.get("http://192.168.8.202:5000/api/sections");
         this.sections = data;
       } catch (err) {
         this.error =
@@ -150,7 +150,7 @@ export default {
       }
       this.saving = true;
       try {
-        await axios.put(`http://127.0.0.1:5000/api/sections/${id}`, {
+        await axios.put(`http://192.168.8.202:5000/api/sections/${id}`, {
           SectionName: this.form.SectionName.trim(),
           Description: this.form.Description.trim()
         });
@@ -166,7 +166,7 @@ export default {
       if (!confirm(`Delete Section ID ${id}?`)) return;
       this.loading = true;
       try {
-        await axios.delete(`http://127.0.0.1:5000/api/sections/${id}`);
+        await axios.delete(`http://192.168.8.202:5000/api/sections/${id}`);
         await this.fetchSections();
       } catch (err) {
         alert("Failed to delete: " + (err.response?.data?.error || err.message));
@@ -181,7 +181,7 @@ export default {
       }
       this.adding = true;
       try {
-        await axios.post("http://127.0.0.1:5000/api/sections", {
+        await axios.post("http://192.168.8.202:5000/api/sections", {
           SectionName: this.newSection.SectionName.trim(),
           Description: this.newSection.Description.trim()
         });

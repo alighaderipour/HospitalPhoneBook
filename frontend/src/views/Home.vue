@@ -4,12 +4,12 @@
     <h2>جستجوی کارکنان و پزشکان</h2>
     <div class="search-bar">
       <input
-        v-model="query"
-        @keyup.enter="performSearch"
-        type="text"
-        placeholder="جستجوی نام، شغل، شماره تلفن یا بخش..."
-        class="input-field"
-      />
+  v-model="query"
+  @input="debouncedSearch"
+  type="text"
+  placeholder="جستجوی نام، شغل، شماره تلفن یا بخش..."
+  class="input-field"
+/>
       <button @click="performSearch" class="btn btn-primary">جستجو</button>
     </div>
 
@@ -66,37 +66,50 @@ export default {
   data() {
     return {
       query: "",
-      results: [],
-      loading: false,
-      error: "",
-      tried: false, // to show "no results" only after first search
+    results: [],
+    loading: false,
+    error: "",
+    tried: false,
+    debounceTimer: null, // NEW
     };
   },
   methods: {
-    async performSearch() {
-      this.tried = true;
-      if (!this.query.trim()) {
-        this.error = "لطفاً یک عبارت جستجو وارد کنید.";
-        this.results = [];
-        return;
-      }
-
-      this.loading = true;
-      this.error = "";
+  async performSearch() {
+    this.tried = true;
+    if (!this.query.trim()) {
+      this.error = "لطفاً یک عبارت جستجو وارد کنید.";
       this.results = [];
+      return;
+    }
 
-      try {
-        const response = await axios.get("http://127.0.0.1:5000/search", {
-          params: { q: this.query.trim() },
-        });
-        this.results = response.data;
-      } catch (err) {
-        this.error = err.response?.data?.error || "جستجو ناموفق بود.";
-      } finally {
-        this.loading = false;
-      }
-    },
+    this.loading = true;
+    this.error = "";
+    this.results = [];
+
+    try {
+      const response = await axios.get("http://192.168.8.202:5000/search", {
+        params: { q: this.query.trim() },
+      });
+      this.results = response.data;
+    } catch (err) {
+      this.error = err.response?.data?.error || "جستجو ناموفق بود.";
+    } finally {
+      this.loading = false;
+    }
   },
+
+  debouncedSearch() {
+    this.tried = true;
+    clearTimeout(this.debounceTimer);
+    if (this.query.trim().length < 2) {
+      this.results = [];
+      return;
+    }
+    this.debounceTimer = setTimeout(() => {
+      this.performSearch();
+    }, 300);
+  },
+},
 };
 </script>
 

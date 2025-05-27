@@ -7,8 +7,8 @@ class Config:
     SQLALCHEMY_DATABASE_URI = URL.create(
         "mssql+pyodbc",
         username="sa",
-        password="Aa@123456",
-        host="DESKTOP-ICP5P36",
+        password="SQL@ mri2025",
+        host="Mri-Nobat",
         database="phonebooks",  # Your database name
         query={
             "driver": "ODBC Driver 17 for SQL Server",

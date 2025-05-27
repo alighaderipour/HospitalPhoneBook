@@ -65,7 +65,7 @@ export default {
       this.loading = true;
       this.error = "";
       try {
-        const response = await axios.get("http://127.0.0.1:5000/api/phonetypes");
+        const response = await axios.get("http://192.168.8.202:5000/api/phonetypes");
         this.phoneTypes = response.data;
       } catch (err) {
         this.error =
@@ -82,7 +82,7 @@ export default {
       }
       this.loading = true;
       try {
-        await axios.put(`http://127.0.0.1:5000/api/phonetypes/${pt.phoneTypeId}`, {
+        await axios.put(`http://192.168.8.202:5000/api/phonetypes/${pt.phoneTypeId}`, {
           PhoneTypeName: newName.trim(),
         });
         this.fetchPhoneTypes();
@@ -97,7 +97,7 @@ export default {
       if (!confirm(`Delete PhoneType ID ${id}? This cannot be undone.`)) return;
       this.loading = true;
       try {
-        await axios.delete(`http://127.0.0.1:5000/api/phonetypes/${id}`);
+        await axios.delete(`http://192.168.8.202:5000/api/phonetypes/${id}`);
         this.fetchPhoneTypes();
       } catch (err) {
         alert("Failed to delete: " + (err.response?.data?.error || err.message));
@@ -112,7 +112,7 @@ export default {
 
       this.loading = true;
       try {
-        await axios.post("http://127.0.0.1:5000/api/phonetypes", {
+        await axios.post("http://192.168.8.202:5000/api/phonetypes", {
           PhoneTypeName: name,
         });
         this.newPhoneTypeName = "";

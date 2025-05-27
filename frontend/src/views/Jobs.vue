@@ -122,7 +122,7 @@ export default {
   methods: {
     async fetchSections() {
       try {
-        const { data } = await axios.get("http://127.0.0.1:5000/api/sections");
+        const { data } = await axios.get("http://192.168.8.202:5000/api/sections");
         this.sectionsList = data;
       } catch (e) {
         console.error("Failed to load sections", e);
@@ -133,7 +133,7 @@ export default {
       this.error = "";
       this.editingId = null;
       try {
-        const { data } = await axios.get("http://127.0.0.1:5000/api/jobs");
+        const { data } = await axios.get("http://192.168.8.202:5000/api/jobs");
         this.jobs = data;
       } catch (err) {
         this.error = "Failed to load jobs: " + (err.response?.data?.error || err.message);
@@ -162,7 +162,7 @@ export default {
       }
       this.saving = true;
       try {
-        await axios.put(`http://127.0.0.1:5000/api/jobs/${id}`, {
+        await axios.put(`http://192.168.8.202:5000/api/jobs/${id}`, {
           JobTitle: this.form.JobTitle.trim(),
           SectionID: Number(this.form.SectionID),
         });
@@ -177,7 +177,7 @@ export default {
       if (!confirm(`Delete Job ID ${id}? This cannot be undone.`)) return;
       this.loading = true;
       try {
-        await axios.delete(`http://127.0.0.1:5000/api/jobs/${id}`);
+        await axios.delete(`http://192.168.8.202:5000/api/jobs/${id}`);
         await this.fetchJobs();
       } catch (err) {
         alert("Failed to delete job: " + (err.response?.data?.error || err.message));
@@ -192,7 +192,7 @@ export default {
       }
       this.saving = true;
       try {
-        await axios.post("http://127.0.0.1:5000/api/jobs", {
+        await axios.post("http://192.168.8.202:5000/api/jobs", {
           JobTitle: this.newJob.JobTitle.trim(),
           SectionID: Number(this.newJob.SectionID),
         });
